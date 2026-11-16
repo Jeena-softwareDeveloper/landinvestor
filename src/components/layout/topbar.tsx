@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import {
   Menu,
-  Search,
   Bell,
   ChevronDown,
   User,
@@ -13,6 +12,7 @@ import {
   LogOut,
 } from "lucide-react";
 import Breadcrumbs from "./breadcrumbs";
+import { SearchInput } from "@/components/ui/search-input";
 import { cn } from "@/lib/utils";
 
 interface TopbarProps {
@@ -73,14 +73,12 @@ export default function Topbar({ onMenuClick, user }: TopbarProps) {
         {/* Right side */}
         <div className="flex items-center gap-2">
           {/* Search */}
-          <div className="hidden md:block relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search..."
+          <div className="hidden md:block">
+            <SearchInput
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-64 pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg bg-[#F5F7FA] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-colors"
+              onChange={setSearchQuery}
+              placeholder="Search platform..."
+              className="w-64"
             />
           </div>
 

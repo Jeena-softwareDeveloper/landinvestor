@@ -200,6 +200,32 @@ export default function LandDetailPage({
             </p>
           </div>
 
+          {/* Property Photographs & Gallery */}
+          {land.images && land.images.length > 0 && (
+            <div className="pt-2">
+              <span className="text-xs text-slate-400 font-medium block mb-2">
+                Property Photographs & Site Views ({land.images.length})
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {land.images.map((img, idx) => (
+                  <a
+                    key={idx}
+                    href={img}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative aspect-video rounded-lg overflow-hidden border border-slate-200 bg-slate-100 group block hover:ring-2 hover:ring-blue-500 transition-all shadow-xs"
+                  >
+                    <img
+                      src={img}
+                      alt={`${land.name} photo ${idx + 1}`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Legal Documents */}
           {land.documents && land.documents.length > 0 && (
             <div className="pt-2">
@@ -325,3 +351,4 @@ export default function LandDetailPage({
     </div>
   );
 }
+

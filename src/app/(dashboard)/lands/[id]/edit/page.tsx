@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { FormInput } from '@/components/ui/input';
 import { FormSelect } from '@/components/ui/select';
 import { FormTextarea } from '@/components/ui/textarea';
+import { FileUpload } from '@/components/ui/file-upload';
 import { LoadingSpinner } from '@/components/ui/loading';
 import { landSchema, LandInput } from '@/lib/validations/land';
 
@@ -22,6 +23,8 @@ export default function EditLandPage({
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [images, setImages] = useState<string[]>([]);
+  const [documents, setDocuments] = useState<string[]>([]);
 
   const {
     register,
@@ -52,6 +55,15 @@ export default function EditLandPage({
               payoutDayOfMonth: 1,
             },
           });
+
+          const loadedImages = Array.isArray(json.land.images) ? [...json.land.images] : [];
+          if (json.land.coverImage && !loadedImages.includes(json.land.coverImage)) {
+            loadedImages.unshift(json.land.coverImage);
+          }
+          setImages(loadedImages);
+          setDocuments(Array.isArray(json.land.documents) ? json.land.documents : []);
+        } else {
+          toast.error(json.message || 'Failed to load land property details');
         }
       } catch {
         toast.error('Failed to load land property details');
@@ -65,10 +77,16 @@ export default function EditLandPage({
   const onSubmit = async (data: LandInput) => {
     try {
       setSubmitting(true);
+      const payload = {
+        ...data,
+        images,
+        documents,
+      };
+
       const res = await fetch(`/api/lands/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
       const json = await res.json();
@@ -93,7 +111,7 @@ export default function EditLandPage({
     <div className="max-w-4xl mx-auto space-y-6">
       <PageHeader
         title="Edit Land Property"
-        description="Update valuation parameters, survey records, and status."
+        description="Update valuation parameters, survey records, photographs, and documents."
         breadcrumbs={[
           { label: 'Dashboard', href: '/dashboard' },
           { label: 'Lands', href: '/lands' },
@@ -164,6 +182,43 @@ export default function EditLandPage({
               ]}
               {...register('status')}
               error={errors.status?.message}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+            <FormInput
+              label="Configured Daily Return Rate (% per day)"
+              type="number"
+              step="0.01"
+              placeholder="0.25"
+              helperText="Returns percentage per day (e.g. 0.25% per day = 7.5% monthly = 90% annual yield)"
+              {...register('dailyReturnConfig.baseRatePercentage', { valueAsNumber: true })}
+              error={errors.dailyReturnConfig?.baseRatePercentage?.message}
+            />
+          </div>
+        </div>
+
+        {/* Media & Legal Documentation */}
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+          <h3 className="text-base font-bold text-[#142B4A] border-b border-slate-100 pb-2">
+            Media & Legal Documents
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FileUpload
+              label="Land Photographs / Site Images"
+              description="Upload aerial or site pictures (PNG, JPG)"
+              multiple
+              value={images}
+              onChange={setImages}
+            />
+
+            <FileUpload
+              label="Legal Verification & Survey Documents"
+              description="Upload Title Deeds, Survey Map, NOC (PDF)"
+              multiple
+              value={documents}
+              onChange={setDocuments}
             />
           </div>
         </div>

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Investment from '@/models/Investment';
 import DailyReturn from '@/models/DailyReturn';
+import Customer from '@/models/Customer';
+import { TierService } from '@/services/tier.service';
 import AuditLog from '@/models/AuditLog';
 import { getTokenFromRequest, verifyToken } from '@/lib/auth';
 import { calculateReturnsSchema } from '@/lib/validations/returns';
@@ -56,6 +58,8 @@ export async function POST(req: NextRequest) {
     let skippedCount = 0;
     let totalAccruedAmount = 0;
 
+    const { tiers } = await TierService.getTierConfigs();
+
     for (const inv of activeInvestments) {
       // Check if return was already calculated for this investment on this date
       const existing = await DailyReturn.findOne({
@@ -68,8 +72,14 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      const rate = overrideRate !== undefined ? overrideRate : inv.returnRate;
-      const dailyReturnAmount = Math.round(((inv.amount * rate) / 100) * 100) / 100;
+      // Fetch customer tier bonus yield
+      const customer = await Customer.findById(inv.customerId).select('investorTier').lean();
+      const customerTier = tiers.find((t) => t.key === (customer?.investorTier || 'bronze'));
+      const tierBonus = customerTier?.dailyBonusRate || 0;
+
+      const baseRate = overrideRate !== undefined ? overrideRate : inv.returnRate;
+      const effectiveRate = parseFloat((baseRate + tierBonus).toFixed(4));
+      const dailyReturnAmount = Math.round(((inv.amount * effectiveRate) / 100) * 100) / 100;
 
       await DailyReturn.create({
         investmentId: inv._id,
@@ -77,7 +87,7 @@ export async function POST(req: NextRequest) {
         landId: inv.landId,
         date: calcDate,
         investmentAmount: inv.amount,
-        returnRate: rate,
+        returnRate: effectiveRate,
         dailyReturnAmount,
         status: 'accrued', // Accrued only - not credited or paid without verification
       });
@@ -118,3 +128,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+

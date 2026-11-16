@@ -18,6 +18,8 @@ import { DataTable, Column } from '@/components/ui/data-table';
 import { StatusBadge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
+import { FormInput } from '@/components/ui/input';
+import { FormTextarea } from '@/components/ui/textarea';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { IWithdrawal } from '@/types';
 
@@ -370,33 +372,24 @@ export default function WithdrawalsPage() {
             </div>
 
             {actionType === 'pay' && (
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-700 block">
-                  Bank Reference Number (UTR / Transaction ID) *
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. UTR401568912301"
-                  value={paymentReference}
-                  onChange={(e) => setPaymentReference(e.target.value)}
-                  className="w-full text-xs p-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
-                />
-              </div>
+              <FormInput
+                label="Bank Reference Number (UTR / Transaction ID)"
+                placeholder="e.g. UTR401568912301"
+                value={paymentReference}
+                onChange={(e) => setPaymentReference(e.target.value)}
+                required
+              />
             )}
 
             {actionType === 'reject' && (
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-700 block">
-                  Reason for Rejection *
-                </label>
-                <textarea
-                  placeholder="e.g. Bank details mismatch, insufficient verified yield accrual..."
-                  rows={3}
-                  value={rejectionReason}
-                  onChange={(e) => setRejectionReason(e.target.value)}
-                  className="w-full text-xs p-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
-                />
-              </div>
+              <FormTextarea
+                label="Reason for Rejection"
+                placeholder="e.g. Bank details mismatch, insufficient verified yield accrual..."
+                rows={3}
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                required
+              />
             )}
 
             <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
@@ -437,3 +430,4 @@ export default function WithdrawalsPage() {
     </div>
   );
 }
+

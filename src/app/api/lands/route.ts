@@ -91,8 +91,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const dailyRate =
+      validated.data.dailyReturnConfig?.baseRatePercentage ??
+      (validated.data as any).dailyReturnConfig?.defaultRate ??
+      0.1;
+
     const landData = {
       ...validated.data,
+      dailyReturnConfig: {
+        defaultRate: dailyRate,
+        baseRatePercentage: dailyRate,
+        isActive: true,
+      },
       availableInvestment: validated.data.availableInvestment ?? validated.data.totalValue,
       totalInvested: 0,
       investmentPercentage: 0,

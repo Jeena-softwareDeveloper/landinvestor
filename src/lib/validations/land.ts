@@ -21,3 +21,4 @@ export const landSchema = z.object({
 });
 
 export type LandInput = z.infer<typeof landSchema>;
+

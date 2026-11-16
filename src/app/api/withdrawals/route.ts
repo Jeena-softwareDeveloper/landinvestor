@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const query: any = {};
     if (status && status !== 'all') query.status = status;
-    if (customerId) query.customerId = customerId;
+    if (customerId && customerId !== 'all') query.customerId = customerId;
 
     const skip = (page - 1) * limit;
 

@@ -15,7 +15,9 @@ export const customerSchema = z.object({
     })
     .optional(),
   upiId: z.string().optional(),
+  investorTier: z.string().optional(),
   accountStatus: z.enum(['active', 'inactive', 'suspended']).default('active'),
 });
 
 export type CustomerInput = z.infer<typeof customerSchema>;
+

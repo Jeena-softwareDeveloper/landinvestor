@@ -23,10 +23,10 @@ const FormTextarea = React.forwardRef<HTMLTextAreaElement, FormTextareaProps>(
         {label && (
           <label
             htmlFor={textareaId}
-            className="block text-sm font-medium text-[#1E293B]"
+            className="block text-sm font-semibold text-[#1E293B]"
           >
             {label}
-            {props.required && <span className="text-[#DC2626] ml-0.5">*</span>}
+            {props.required && <span className="text-[#DC2626] ml-1">*</span>}
           </label>
         )}
         <textarea
@@ -37,19 +37,19 @@ const FormTextarea = React.forwardRef<HTMLTextAreaElement, FormTextareaProps>(
             error ? `${textareaId}-error` : helperText ? `${textareaId}-helper` : undefined
           }
           className={cn(
-            'block w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-[#1E293B] placeholder:text-[#64748B]',
-            'transition-colors duration-200 resize-y min-h-[80px]',
+            'block w-full rounded-lg border bg-white px-3.5 py-2.5 text-sm text-[#1E293B] placeholder:text-slate-400',
+            'transition-all duration-200 resize-y min-h-[90px] shadow-sm',
             'focus:outline-none focus:ring-2 focus:ring-offset-0',
             error
-              ? 'border-[#DC2626] focus:ring-[#DC2626]/20 focus:border-[#DC2626]'
-              : 'border-[#E2E8F0] focus:ring-[#2563EB]/20 focus:border-[#2563EB]',
-            'disabled:bg-[#F5F7FA] disabled:cursor-not-allowed disabled:opacity-60',
+              ? 'border-red-400 bg-red-50/20 focus:ring-red-500/20 focus:border-red-500'
+              : 'border-slate-300 hover:border-slate-400 focus:ring-[#2563EB]/20 focus:border-[#2563EB]',
+            'disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed disabled:opacity-75',
             className
           )}
           {...props}
         />
         {error && (
-          <p id={`${textareaId}-error`} className="text-xs text-[#DC2626]" role="alert">
+          <p id={`${textareaId}-error`} className="text-xs font-medium text-[#DC2626]" role="alert">
             {error}
           </p>
         )}

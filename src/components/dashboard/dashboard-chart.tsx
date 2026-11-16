@@ -263,3 +263,4 @@ export const DashboardChart: React.FC<DashboardChartProps> = ({
     </div>
   );
 };
+

@@ -1,5 +1,19 @@
 import mongoose from 'mongoose';
 
+// Ensure all Mongoose models are registered in memory upon database connection
+import '@/models/Customer';
+import '@/models/Land';
+import '@/models/Investment';
+import '@/models/PaymentOrder';
+import '@/models/PaymentTransaction';
+import '@/models/UpiAccount';
+import '@/models/UpiAssignmentLog';
+import '@/models/DailyReturn';
+import '@/models/Withdrawal';
+import '@/models/Admin';
+import '@/models/Notification';
+import '@/models/TierConfig';
+
 const MONGODB_URI = process.env.MONGODB_URI!;
 
 if (!MONGODB_URI) {

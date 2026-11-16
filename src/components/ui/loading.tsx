@@ -59,3 +59,4 @@ export const SkeletonTable: React.FC<{ rows?: number; columns?: number }> = ({
     </div>
   </div>
 );
+

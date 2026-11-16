@@ -45,6 +45,7 @@ export default function EditCustomerPage({
             email: c.email,
             address: c.address,
             kycStatus: c.kycStatus,
+            investorTier: c.investorTier || 'bronze',
             bankDetails: c.bankDetails || {},
             upiId: c.upiId || '',
             accountStatus: c.accountStatus,
@@ -136,6 +137,18 @@ export default function EditCustomerPage({
               {...register('kycStatus')}
               error={errors.kycStatus?.message}
             />
+
+            <FormSelect
+              label="Investor Recognition Level / Tier"
+              options={[
+                { value: 'bronze', label: '🥉 Bronze Investor (Base Level)' },
+                { value: 'silver', label: '🥈 Silver Investor' },
+                { value: 'gold', label: '🥇 Gold Investor' },
+                { value: 'platinum', label: '💎 Platinum Investor' },
+                { value: 'diamond', label: '👑 Diamond Investor' },
+              ]}
+              {...register('investorTier' as any)}
+            />
           </div>
 
           <FormTextarea
@@ -221,3 +234,4 @@ export default function EditCustomerPage({
     </div>
   );
 }
+

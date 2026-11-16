@@ -24,3 +24,4 @@ export const updateWithdrawalStatusSchema = z.object({
 
 export type WithdrawalInput = z.infer<typeof withdrawalSchema>;
 export type UpdateWithdrawalStatusInput = z.infer<typeof updateWithdrawalStatusSchema>;
+

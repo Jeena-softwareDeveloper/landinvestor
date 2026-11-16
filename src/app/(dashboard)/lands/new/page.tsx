@@ -152,10 +152,11 @@ export default function NewLandPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
             <FormInput
-              label="Configured Daily Base Return Rate (%)"
+              label="Configured Daily Return Rate (% per day)"
               type="number"
               step="0.01"
-              placeholder="0.1"
+              placeholder="0.25"
+              helperText="Returns percentage per day (e.g. 0.25% per day = 7.5% monthly = 90% annual yield)"
               {...register('dailyReturnConfig.baseRatePercentage', { valueAsNumber: true })}
               error={errors.dailyReturnConfig?.baseRatePercentage?.message}
             />
@@ -219,3 +220,4 @@ export default function NewLandPage() {
     </div>
   );
 }
+

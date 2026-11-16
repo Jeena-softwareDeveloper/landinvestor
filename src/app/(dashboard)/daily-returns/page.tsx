@@ -18,6 +18,8 @@ import { DataTable, Column } from '@/components/ui/data-table';
 import { StatusBadge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
+import { FormInput } from '@/components/ui/input';
+import { FormSelect } from '@/components/ui/select';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { IDailyReturn, ILand } from '@/types';
 
@@ -380,46 +382,34 @@ export default function DailyReturnsPage() {
           title="Execute Daily Return Calculation"
           description="Accrues daily yields for active customer investments according to configured rates."
         >
-          <div className="space-y-4 text-xs">
-            <div className="space-y-1">
-              <label className="font-semibold text-slate-700 block">Calculation Date</label>
-              <input
-                type="date"
-                value={calcDate}
-                onChange={(e) => setCalcDate(e.target.value)}
-                className="w-full text-xs p-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
-              />
-            </div>
+          <div className="space-y-4">
+            <FormInput
+              label="Calculation Date"
+              type="date"
+              value={calcDate}
+              onChange={(e) => setCalcDate(e.target.value)}
+              required
+            />
 
-            <div className="space-y-1">
-              <label className="font-semibold text-slate-700 block">Filter by Land Parcel</label>
-              <select
-                value={calcLandId}
-                onChange={(e) => setCalcLandId(e.target.value)}
-                className="w-full text-xs p-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
-              >
-                <option value="all">All Active Land Properties</option>
-                {lands.map((l) => (
-                  <option key={l._id} value={l._id}>
-                    {l.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <FormSelect
+              label="Filter by Land Parcel"
+              value={calcLandId}
+              onChange={(e) => setCalcLandId(e.target.value)}
+              options={[
+                { value: 'all', label: 'All Active Land Properties' },
+                ...lands.map((l) => ({ value: l._id, label: l.name })),
+              ]}
+            />
 
-            <div className="space-y-1">
-              <label className="font-semibold text-slate-700 block">
-                Rate Override (%) (Optional)
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                placeholder="Leave blank to use each contract's configured rate"
-                value={calcOverrideRate}
-                onChange={(e) => setCalcOverrideRate(e.target.value)}
-                className="w-full text-xs p-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
-              />
-            </div>
+            <FormInput
+              label="Rate Override (%) (Optional)"
+              type="number"
+              step="0.01"
+              placeholder="Leave blank to use each contract's configured rate"
+              value={calcOverrideRate}
+              onChange={(e) => setCalcOverrideRate(e.target.value)}
+              helperText="E.g. enter 0.12 for 0.12% daily return override"
+            />
 
             <div className="p-3 bg-amber-50 rounded-lg border border-amber-200 text-amber-900 space-y-1">
               <div className="flex items-center gap-1.5 font-bold">
@@ -458,3 +448,4 @@ export default function DailyReturnsPage() {
     </div>
   );
 }
+

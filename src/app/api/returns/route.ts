@@ -16,8 +16,8 @@ export async function GET(req: NextRequest) {
     const endDate = searchParams.get('endDate') || '';
     const query: any = {};
 
-    if (customerId) query.customerId = customerId;
-    if (landId) query.landId = landId;
+    if (customerId && customerId !== 'all') query.customerId = customerId;
+    if (landId && landId !== 'all') query.landId = landId;
     if (status && status !== 'all') query.status = status;
 
     if (startDate || endDate) {

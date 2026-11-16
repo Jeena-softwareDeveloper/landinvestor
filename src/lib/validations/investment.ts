@@ -13,3 +13,4 @@ export const investmentSchema = z.object({
 });
 
 export type InvestmentInput = z.infer<typeof investmentSchema>;
+

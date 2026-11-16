@@ -39,3 +39,4 @@ export const CurrencyDisplay: React.FC<CurrencyDisplayProps> = ({
     </span>
   );
 };
+

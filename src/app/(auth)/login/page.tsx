@@ -6,7 +6,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import { MapPin, Eye, EyeOff, Loader2, Mail, Lock } from "lucide-react";
+import {
+  MapPin,
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  ShieldCheck,
+  Sparkles,
+  ArrowRight,
+} from "lucide-react";
+import { FormInput } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -23,11 +34,18 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
+
+  const handleFillDemo = () => {
+    setValue("email", "admin@landvest.com");
+    setValue("password", "password123");
+    setError(null);
+  };
 
   const onSubmit = async (data: LoginFormValues) => {
     setError(null);
@@ -53,182 +71,197 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen">
-      {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-[#142B4A] via-[#1a3a62] to-[#2563EB] items-center justify-center p-12">
-        {/* Decorative elements */}
-        <div className="absolute top-0 left-0 w-full h-full">
+    <div className="flex min-h-screen bg-[#F8FAFC]">
+      {/* Left Side - Branding & Visual Showcase */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-[#142B4A] via-[#1a3a62] to-[#2563EB] items-center justify-center p-12 select-none">
+        {/* Glow & Blurred Accents */}
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
           <div className="absolute top-20 left-10 w-72 h-72 bg-white/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#2563EB]/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#2563EB]/25 rounded-full blur-3xl" />
           <div className="absolute top-1/2 left-1/3 w-48 h-48 bg-white/5 rounded-full blur-2xl" />
         </div>
 
         <div className="relative z-10 max-w-lg text-center">
+          {/* Logo Mark */}
           <div className="flex items-center justify-center gap-3 mb-8">
-            <div className="w-14 h-14 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20">
-              <MapPin className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20 shadow-2xl shadow-black/20">
+              <MapPin className="w-9 h-9 text-white" />
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-white mb-4 tracking-tight">
-            LandVest Pro
+
+          <h1 className="text-4xl font-extrabold text-white mb-3 tracking-tight">
+            Land Investment
           </h1>
-          <p className="text-xl text-blue-200 mb-8 font-light">
-            Smart Land Investment Management
-          </p>
-          <div className="w-16 h-1 bg-[#2563EB] mx-auto mb-8 rounded-full" />
-          <p className="text-blue-200/70 text-sm leading-relaxed max-w-sm mx-auto">
-            Track investments, manage customer portfolios, monitor daily
-            returns, and generate comprehensive financial reports — all in one
-            powerful platform.
+          <p className="text-lg text-blue-200 mb-8 font-light">
+            Smart Land Investment & Rental Returns Platform
           </p>
 
-          {/* Stats preview */}
-          <div className="mt-12 grid grid-cols-3 gap-6">
-            {[
-              { label: "Active Investments", value: "500+" },
-              { label: "Total Returns", value: "₹2.5Cr+" },
-              { label: "Happy Clients", value: "200+" },
-            ].map((stat) => (
-              <div
-                key={stat.label}
-                className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10"
-              >
-                <div className="text-2xl font-bold text-white">
-                  {stat.value}
-                </div>
-                <div className="text-xs text-blue-200/60 mt-1">
-                  {stat.label}
-                </div>
+          <div className="w-16 h-1 bg-[#2563EB] mx-auto mb-8 rounded-full" />
+
+          <p className="text-blue-100/80 text-sm leading-relaxed max-w-md mx-auto">
+            Track surveyed land parcels, monitor customer portfolios, manage
+            automated daily rental yields, and generate audit-ready financial
+            statements — all from an enterprise fintech cockpit.
+          </p>
+
+          {/* Key Metric Highlights */}
+          <div className="mt-12 grid grid-cols-3 gap-4">
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/15 text-center">
+              <div className="text-2xl font-bold text-white tracking-tight">
+                500+
               </div>
-            ))}
+              <div className="text-xs text-blue-200/80 font-medium mt-1">
+                Active Contracts
+              </div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/15 text-center">
+              <div className="text-2xl font-bold text-white tracking-tight">
+                ₹2.5Cr+
+              </div>
+              <div className="text-xs text-blue-200/80 font-medium mt-1">
+                Returns Paid
+              </div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/15 text-center">
+              <div className="text-2xl font-bold text-white tracking-tight">
+                100%
+              </div>
+              <div className="text-xs text-blue-200/80 font-medium mt-1">
+                Audited UTR
+              </div>
+            </div>
+          </div>
+
+          {/* Trust Banner */}
+          <div className="mt-10 inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-xs text-blue-100/90 border border-white/15">
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>Bank-Grade Encryption & Audit-Verified Logs</span>
           </div>
         </div>
       </div>
 
-      {/* Right Side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
+      {/* Right Side - Login Form Card */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
         <div className="w-full max-w-md">
-          {/* Mobile branding */}
-          <div className="lg:hidden flex items-center gap-2 mb-8 justify-center">
-            <div className="w-10 h-10 bg-[#142B4A] rounded-lg flex items-center justify-center">
-              <MapPin className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-[#142B4A]">
-              LandVest Pro
-            </span>
-          </div>
-
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-[#1E293B]">
-              Sign in to your account
-            </h2>
-            <p className="text-sm text-gray-500 mt-2">
-              Enter your credentials to access the dashboard
-            </p>
-          </div>
-
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{error}</p>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            {/* Email */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-[#1E293B] mb-1.5"
-              >
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="admin@landvestpro.com"
-                  {...register("email")}
-                  className={`block w-full pl-11 pr-4 py-3 border rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] ${
-                    errors.email
-                      ? "border-red-300 bg-red-50"
-                      : "border-gray-300 bg-white"
-                  }`}
-                />
+          {/* Card Container */}
+          <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/60 border border-slate-200/90 p-8 sm:p-10">
+            {/* Header / Brand on Mobile */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-11 h-11 bg-[#142B4A] rounded-xl flex items-center justify-center shadow-md shadow-[#142B4A]/20">
+                <MapPin className="w-6 h-6 text-white" />
               </div>
-              {errors.email && (
-                <p className="mt-1.5 text-xs text-red-500">
-                  {errors.email.message}
-                </p>
-              )}
+              <div>
+                <h2 className="text-xl font-bold text-[#142B4A] tracking-tight">
+                  Land Investment
+                </h2>
+                <span className="text-xs font-medium text-slate-400">
+                  Administrative Portal
+                </span>
+              </div>
             </div>
 
-            {/* Password */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-[#1E293B] mb-1.5"
+            <div className="mb-6">
+              <h3 className="text-2xl font-bold text-[#1E293B] tracking-tight">
+                Sign in to your account
+              </h3>
+              <p className="text-sm text-slate-500 mt-1">
+                Enter your credentials to access the management dashboard
+              </p>
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="mb-5 p-3.5 bg-red-50/80 border border-red-200 rounded-xl text-sm text-red-600 flex items-start gap-2.5">
+                <span className="shrink-0 font-bold">!</span>
+                <span>{error}</span>
+              </div>
+            )}
+
+            {/* Login Form */}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              {/* Email Input using Reusable FormInput */}
+              <FormInput
+                label="Email Address"
+                type="email"
+                placeholder="admin@landvest.com"
+                leftIcon={<Mail className="w-5 h-5" />}
+                autoComplete="email"
+                {...register("email")}
+                error={errors.email?.message}
+                required
+              />
+
+              {/* Password Input using Reusable FormInput */}
+              <FormInput
+                label="Password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••••••"
+                leftIcon={<Lock className="w-5 h-5" />}
+                rightIcon={
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="p-1 rounded text-slate-400 hover:text-slate-600 focus:outline-none transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                }
+                autoComplete="current-password"
+                {...register("password")}
+                error={errors.password?.message}
+                required
+              />
+
+              {/* Submit Button using Reusable Button */}
+              <Button
+                type="submit"
+                variant="secondary"
+                size="lg"
+                loading={isSubmitting}
+                className="w-full font-semibold shadow-md shadow-blue-500/20 mt-2"
               >
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                Sign In to Dashboard
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </Button>
+            </form>
+
+            {/* Demo Credentials Quick-Fill Helper Box */}
+            <div className="mt-6 pt-5 border-t border-slate-100">
+              <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-200/80 flex items-center justify-between gap-3">
+                <div className="text-xs text-slate-600">
+                  <div className="font-semibold text-slate-800 flex items-center gap-1.5 mb-0.5">
+                    <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Demo Credentials</span>
+                  </div>
+                  <div className="text-[11px] text-slate-500 font-mono">
+                    admin@landvest.com / password123
+                  </div>
                 </div>
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  placeholder="Enter your password"
-                  {...register("password")}
-                  className={`block w-full pl-11 pr-12 py-3 border rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] ${
-                    errors.password
-                      ? "border-red-300 bg-red-50"
-                      : "border-gray-300 bg-white"
-                  }`}
-                />
-                <button
+                <Button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleFillDemo}
+                  className="text-xs h-8 px-2.5 bg-white border-slate-300 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 transition-colors"
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
+                  Quick Fill
+                </Button>
               </div>
-              {errors.password && (
-                <p className="mt-1.5 text-xs text-red-500">
-                  {errors.password.message}
-                </p>
-              )}
             </div>
 
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-[#2563EB] hover:bg-[#1d4ed8] disabled:bg-[#2563EB]/70 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#2563EB]/50 focus:ring-offset-2"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Signing in…
-                </>
-              ) : (
-                "Sign In"
-              )}
-            </button>
-          </form>
-
-          <p className="mt-8 text-center text-xs text-gray-400">
-            © 2025 LandVest Pro. All rights reserved.
-          </p>
+            {/* Footer / Copyright */}
+            <div className="mt-6 text-center text-xs text-slate-400 space-y-1">
+              <p>© 2025 LandVest Pro. All rights reserved.</p>
+              <p className="text-[11px] text-slate-400/80">
+                Authorized Personnel Only • IP Logged
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,22 +1,31 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-inter-next",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
+  variable: "--font-jakarta-next",
+  weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "LandVest Pro - Land Investment Management Platform",
+  title: "Land Investment - Smart Land Investment & Rental Returns Platform",
   description:
-    "Smart land investment management platform for tracking investments, returns, and customer portfolios.",
+    "Fractional real estate co-investment platform backed by legal title deeds, commercial agro leases, and dynamic UPI payouts.",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon", sizes: "32x32", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -27,7 +36,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${plusJakartaSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#F5F7FA] text-[#1E293B]">
         {children}
@@ -38,9 +47,12 @@ export default function RootLayout({
             style: {
               background: "#fff",
               color: "#1E293B",
-              borderRadius: "8px",
+              borderRadius: "12px",
               boxShadow:
-                "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)",
+                "0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)",
+              border: "1px solid #e2e8f0",
+              fontWeight: 500,
+              fontSize: "13px",
             },
             success: {
               iconTheme: { primary: "#059669", secondary: "#fff" },

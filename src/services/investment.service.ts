@@ -49,3 +49,4 @@ export const InvestmentService = {
     return res.json();
   },
 };
+

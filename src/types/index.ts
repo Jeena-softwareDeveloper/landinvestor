@@ -35,10 +35,20 @@ export interface ILand {
   availableInvestment: number;
   totalInvested: number;
   investmentPercentage: number;
+  minInvestmentAmount?: number;
+  coverImage?: string;
   images: string[];
   documents: string[];
   description: string;
   status: LandStatus;
+  publicApproved?: boolean;
+  featured?: boolean;
+  rentalIncomeModel?: {
+    projectedAnnualYield: number;
+    distributionFrequency: 'daily' | 'monthly' | 'quarterly';
+    tenantType: string;
+    leaseDurationYears: number;
+  };
   dailyReturnConfig: IDailyReturnConfig;
   createdAt: Date;
   updatedAt: Date;
@@ -63,6 +73,14 @@ export interface ICustomer {
   mobile: string;
   email: string;
   address: string;
+  addressDetails?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    pincode?: string;
+  };
+  investorTier?: 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond' | string;
+  totalInvested?: number;
   kycStatus: KycStatus;
   bankDetails: IBankDetails;
   upiId: string;
@@ -160,15 +178,16 @@ export interface IWithdrawal {
   customerId: any;
   requestedAmount: number;
   availableBalance: number;
-  upiId: string;
-  bankDetails: IBankDetails;
+  paymentMethod?: string;
+  upiId?: string;
+  bankDetails?: IBankDetails;
   requestDate: Date;
   status: WithdrawalStatus;
   approvedBy?: any;
   approvedAt?: Date;
-  paymentReference: string;
-  paymentProof: string;
-  rejectionReason: string;
+  paymentReference?: string;
+  paymentProof?: string;
+  rejectionReason?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -348,4 +367,149 @@ export interface TransactionReport {
   byType: { type: TransactionType; count: number; amount: number }[];
   byStatus: { status: TransactionStatus; count: number; amount: number }[];
   byMonth: MonthlyTrend[];
+}
+
+
+// ─── UPI & Payment Order Extensions (3-App Architecture) ──────────────
+
+export type UpiStatus = 'active' | 'inactive' | 'suspended';
+export type UpiRotationStrategy = 'round_robin' | 'weighted' | 'least_used' | 'priority';
+
+export interface IUpiAccount {
+  _id: string;
+  upiId: string;
+  displayName: string;
+  qrCode?: string;
+  provider: string;
+  status: UpiStatus;
+  priority: number;
+  weight: number;
+  dailyTransactionLimit: number;
+  dailyCollectionLimit: number;
+  currentDailyCount: number;
+  currentDailyAmount: number;
+  totalTransactions: number;
+  totalCollection: number;
+  lastAssignedAt?: Date;
+  lastResetDate?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type PaymentOrderStatus =
+  | 'initiated'
+  | 'pending'
+  | 'submitted'
+  | 'processing'
+  | 'verified'
+  | 'failed'
+  | 'rejected'
+  | 'expired'
+  | 'refunded';
+
+export interface IPaymentOrder {
+  _id: string;
+  orderId: string;
+  customerId: any;
+  landId: any;
+  amount: number;
+  assignedUpiAccountId?: any;
+  assignedUpiString: string;
+  assignedUpiName: string;
+  qrCodeUrl?: string;
+  status: PaymentOrderStatus;
+  expiresAt: Date;
+  utr?: string;
+  paymentProof?: string;
+  customerNotes?: string;
+  adminNotes?: string;
+  submittedAt?: Date;
+  verifiedAt?: Date;
+  verifiedBy?: any;
+  rejectionReason?: string;
+  investmentId?: any;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IPaymentTransaction {
+  _id: string;
+  orderId: any;
+  utr: string;
+  amount: number;
+  upiAccountId: any;
+  customerId: any;
+  status: 'submitted' | 'verified' | 'rejected';
+  reconciliationSource: 'customer_submission' | 'manual_entry' | 'gateway_webhook';
+  proofUrl?: string;
+  verifiedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IUpiAssignmentLog {
+  _id: string;
+  orderId: string;
+  upiAccountId: any;
+  upiId: string;
+  customerId: any;
+  amount: number;
+  strategyUsed: UpiRotationStrategy;
+  timestamp: Date;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+}
+
+export interface IRentalIncome {
+  _id: string;
+  landId: any;
+  period: string;
+  grossIncome: number;
+  operationalExpenses: number;
+  netDistributableIncome: number;
+  tenantDetails?: string;
+  distributedAmount: number;
+  status: 'collected' | 'distributed' | 'audited';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IReturnLedger {
+  _id: string;
+  customerId: any;
+  investmentId: any;
+  landId: any;
+  amount: number;
+  type: 'rental_yield' | 'bonus' | 'adjustment';
+  referenceDate: Date;
+  payoutStatus: 'accrued' | 'verified' | 'paid';
+  payoutTransactionId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface INotification {
+  _id: string;
+  recipientType: 'customer' | 'admin';
+  recipientId: any;
+  title: string;
+  message: string;
+  type: 'payment' | 'investment' | 'return' | 'withdrawal' | 'system';
+  read: boolean;
+  link?: string;
+  createdAt: Date;
+}
+
+export interface CustomerAuthResponse {
+  token: string;
+  customer: {
+    _id: string;
+    customerId: string;
+    fullName: string;
+    email: string;
+    mobile: string;
+    kycStatus: KycStatus;
+    accountStatus: AccountStatus;
+    walletBalance: number;
+  };
 }

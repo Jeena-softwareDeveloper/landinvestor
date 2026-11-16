@@ -42,3 +42,4 @@ export const LandService = {
     return res.json();
   },
 };
+

@@ -68,6 +68,29 @@ export async function PUT(
       );
     }
 
+    if (body.dailyReturnConfig) {
+      const rate =
+        body.dailyReturnConfig.defaultRate ??
+        body.dailyReturnConfig.baseRatePercentage ??
+        land.dailyReturnConfig?.defaultRate ??
+        0.1;
+      body.dailyReturnConfig.defaultRate = rate;
+      body.dailyReturnConfig.baseRatePercentage = rate;
+    }
+
+    if (body.images && Array.isArray(body.images)) {
+      land.images = body.images;
+      if (body.images.length > 0 && (!land.coverImage || !body.images.includes(land.coverImage))) {
+        land.coverImage = body.images[0];
+      } else if (body.images.length === 0) {
+        land.coverImage = '';
+      }
+    }
+
+    if (body.documents && Array.isArray(body.documents)) {
+      land.documents = body.documents;
+    }
+
     Object.assign(land, body);
 
     // Recalculate available investment and percentage
@@ -149,3 +172,4 @@ export async function DELETE(
     );
   }
 }
+

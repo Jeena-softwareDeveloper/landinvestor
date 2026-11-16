@@ -17,6 +17,9 @@ import {
   ChevronRight,
   LogOut,
   X,
+  QrCode,
+  ShieldCheck,
+  CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,23 +32,16 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Land Management", href: "/lands", icon: MapPin },
-  { label: "Customers", href: "/customers", icon: Users },
-  { label: "Investments", href: "/investments", icon: TrendingUp },
-  {
-    label: "Transactions",
-    href: "/transactions",
-    icon: ArrowLeftRight,
-  },
-  {
-    label: "Daily Returns",
-    href: "/daily-returns",
-    icon: Calculator,
-  },
-  { label: "Withdrawals", href: "/withdrawals", icon: Wallet },
-  { label: "Reports", href: "/reports", icon: FileBarChart },
-  { label: "Settings", href: "/settings", icon: Settings },
+  { label: "Dashboard", href: "/admin/dashboard", legacyHref: "/dashboard", icon: LayoutDashboard },
+  { label: "Land Management", href: "/admin/lands", legacyHref: "/lands", icon: MapPin },
+  { label: "Customers", href: "/admin/customers", legacyHref: "/customers", icon: Users },
+  { label: "Investments", href: "/admin/investments", legacyHref: "/investments", icon: TrendingUp },
+  { label: "Payment Verification", href: "/admin/payments", legacyHref: "/payments", icon: ShieldCheck },
+  { label: "Dynamic UPI Engine", href: "/admin/upi", legacyHref: "/upi", icon: QrCode },
+  { label: "Daily Returns", href: "/admin/returns", legacyHref: "/daily-returns", icon: Calculator },
+  { label: "Withdrawals", href: "/admin/withdrawals", legacyHref: "/withdrawals", icon: Wallet },
+  { label: "Reports", href: "/admin/reports", legacyHref: "/reports", icon: FileBarChart },
+  { label: "Settings", href: "/admin/settings", legacyHref: "/settings", icon: Settings },
 ];
 
 function getInitials(name: string) {
@@ -69,12 +65,14 @@ export default function Sidebar({
 
   const handleLogout = () => {
     Cookies.remove("token");
-    router.push("/login");
+    router.push("/admin/login");
   };
 
-  const isActive = (href: string) => {
-    if (href === "/dashboard") return pathname === "/dashboard";
-    return pathname.startsWith(href);
+  const isItemActive = (item: typeof navItems[0]) => {
+    if (item.href === "/admin/dashboard") {
+      return pathname === "/admin/dashboard" || pathname === "/dashboard";
+    }
+    return pathname.startsWith(item.href) || pathname.startsWith(item.legacyHref);
   };
 
   const sidebarContent = (
@@ -85,9 +83,14 @@ export default function Sidebar({
           <MapPin className="w-5 h-5 text-white" />
         </div>
         {!collapsed && (
-          <span className="text-lg font-bold text-white whitespace-nowrap">
-            LandVest Pro
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-bold text-white whitespace-nowrap">
+              Land Investment
+            </span>
+            <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-blue-500/30 text-blue-300 border border-blue-400/30">
+              ADMIN
+            </span>
+          </div>
         )}
         {/* Mobile close button */}
         <button
@@ -99,83 +102,62 @@ export default function Sidebar({
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const active = isActive(item.href);
+          const active = isItemActive(item);
           return (
             <Link
               key={item.href}
               href={item.href}
               onClick={onMobileClose}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors group",
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                 active
-                  ? "bg-[#2563EB] text-white shadow-lg shadow-[#2563EB]/25"
-                  : "text-white/70 hover:bg-white/10 hover:text-white"
+                  ? "bg-[#2563EB] text-white"
+                  : "text-slate-300 hover:bg-white/10 hover:text-white",
+                collapsed && "justify-center px-2"
               )}
               title={collapsed ? item.label : undefined}
             >
-              <Icon
-                className={cn(
-                  "w-5 h-5 shrink-0",
-                  active ? "text-white" : "text-white/60 group-hover:text-white"
-                )}
-              />
-              {!collapsed && <span className="truncate">{item.label}</span>}
+              <Icon className="w-5 h-5 shrink-0" />
+              {!collapsed && <span>{item.label}</span>}
             </Link>
           );
         })}
       </nav>
 
-      {/* User info & collapse toggle */}
-      <div className="border-t border-white/10 p-3 shrink-0 space-y-2">
-        {user && (
-          <div
-            className={cn(
-              "flex items-center gap-3 px-2 py-2",
-              collapsed && "justify-center"
-            )}
-          >
-            <div className="w-9 h-9 rounded-full bg-[#2563EB] flex items-center justify-center text-white text-xs font-semibold shrink-0">
-              {getInitials(user.name)}
-            </div>
-            {!collapsed && (
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-white truncate">
-                  {user.name}
-                </p>
-                <p className="text-xs text-white/50 capitalize truncate">
-                  {user.role}
-                </p>
-              </div>
-            )}
-          </div>
-        )}
-
-        <button
-          onClick={handleLogout}
+      {/* User profile & logout */}
+      <div className="p-3 border-t border-white/10 shrink-0">
+        <div
           className={cn(
-            "flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white transition-colors",
+            "flex items-center gap-3 p-2 rounded-lg",
             collapsed && "justify-center"
           )}
-          title={collapsed ? "Logout" : undefined}
         >
-          <LogOut className="w-5 h-5 shrink-0" />
-          {!collapsed && <span>Logout</span>}
-        </button>
-
-        {/* Collapse toggle - desktop only */}
-        <button
-          onClick={onToggle}
-          className="hidden lg:flex items-center justify-center w-full py-2 rounded-lg text-white/50 hover:bg-white/10 hover:text-white transition-colors"
-        >
-          {collapsed ? (
-            <ChevronRight className="w-5 h-5" />
-          ) : (
-            <ChevronLeft className="w-5 h-5" />
+          <div className="w-9 h-9 rounded-full bg-[#2563EB] flex items-center justify-center text-white text-xs font-semibold shrink-0">
+            {user ? getInitials(user.name) : "A"}
+          </div>
+          {!collapsed && (
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white truncate">
+                {user?.name || "Administrator"}
+              </p>
+              <p className="text-xs text-slate-400 truncate capitalize">
+                {user?.role || "Super Admin"}
+              </p>
+            </div>
           )}
-        </button>
+          {!collapsed && (
+            <button
+              onClick={handleLogout}
+              className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+              title="Logout"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -185,15 +167,15 @@ export default function Sidebar({
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
           onClick={onMobileClose}
         />
       )}
 
-      {/* Mobile sidebar */}
+      {/* Mobile drawer */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-[280px] bg-[#142B4A] transform transition-transform duration-300 ease-in-out lg:hidden",
+          "fixed inset-y-0 left-0 z-50 w-64 bg-[#142B4A] transform transition-transform duration-200 ease-in-out lg:hidden",
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -203,11 +185,23 @@ export default function Sidebar({
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          "hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 bg-[#142B4A] transition-all duration-300 ease-in-out",
-          collapsed ? "lg:w-20" : "lg:w-[280px]"
+          "hidden lg:flex lg:flex-col relative bg-[#142B4A] transition-all duration-200 ease-in-out shrink-0 h-full",
+          collapsed ? "w-[72px]" : "w-[260px]"
         )}
       >
         {sidebarContent}
+
+        {/* Collapse toggle button */}
+        <button
+          onClick={onToggle}
+          className="absolute -right-3 top-20 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:text-[#1E293B] shadow-sm z-10"
+        >
+          {collapsed ? (
+            <ChevronRight className="w-3.5 h-3.5" />
+          ) : (
+            <ChevronLeft className="w-3.5 h-3.5" />
+          )}
+        </button>
       </aside>
     </>
   );

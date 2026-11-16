@@ -200,15 +200,24 @@ export default function CustomerDetailPage({
                   <StatusBadge status={customer.kycStatus} />
                 </div>
                 <div className="flex justify-between py-1 border-b border-slate-50">
+                  <span className="text-slate-500">Investor Recognition Tier</span>
+                  <span className="font-bold uppercase text-[11px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                    {customer.investorTier || 'bronze'} Tier
+                  </span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-slate-50">
                   <span className="text-slate-500">Account Status</span>
                   <StatusBadge status={customer.accountStatus} />
                 </div>
                 <div className="pt-2">
                   <span className="text-xs text-slate-400 font-medium block mb-1">
-                    Registered Address
+                    Registered Deed &amp; Residential Address Data
                   </span>
                   <p className="text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-100 text-xs">
-                    {customer.address}
+                    {customer.address ||
+                      (customer.addressDetails
+                        ? `${customer.addressDetails.street}, ${customer.addressDetails.city}, ${customer.addressDetails.state} - ${customer.addressDetails.pincode}`
+                        : 'No address registered')}
                   </p>
                 </div>
               </div>
@@ -470,3 +479,4 @@ export default function CustomerDetailPage({
     </div>
   );
 }
+

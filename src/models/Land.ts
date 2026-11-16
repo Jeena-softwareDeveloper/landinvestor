@@ -9,10 +9,20 @@ export interface ILandDocument extends mongoose.Document {
   availableInvestment: number;
   totalInvested: number;
   investmentPercentage: number;
+  minInvestmentAmount: number;
+  coverImage: string;
   images: string[];
   documents: string[];
   description: string;
   status: 'active' | 'inactive' | 'fully_funded';
+  publicApproved: boolean;
+  featured: boolean;
+  rentalIncomeModel: {
+    projectedAnnualYield: number; // percentage, e.g. 14.5%
+    distributionFrequency: 'daily' | 'monthly' | 'quarterly';
+    tenantType: string;
+    leaseDurationYears: number;
+  };
   dailyReturnConfig: {
     defaultRate: number;
     isActive: boolean;
@@ -67,6 +77,15 @@ const LandSchema = new Schema<ILandDocument>(
       min: 0,
       max: 100,
     },
+    minInvestmentAmount: {
+      type: Number,
+      default: 50000,
+      min: [1000, 'Minimum investment amount cannot be less than ₹1,000'],
+    },
+    coverImage: {
+      type: String,
+      default: '',
+    },
     images: {
       type: [String],
       default: [],
@@ -78,21 +97,44 @@ const LandSchema = new Schema<ILandDocument>(
     description: {
       type: String,
       default: '',
-      maxlength: [2000, 'Description cannot exceed 2000 characters'],
+      maxlength: [5000, 'Description cannot exceed 5000 characters'],
     },
     status: {
       type: String,
       enum: {
         values: ['active', 'inactive', 'fully_funded'],
-        message: '{VALUE} is not a valid status',
+        message: '{VALUE} is not a valid land status',
       },
       default: 'active',
+    },
+    publicApproved: {
+      type: Boolean,
+      default: true,
+    },
+    featured: {
+      type: Boolean,
+      default: false,
+    },
+    rentalIncomeModel: {
+      projectedAnnualYield: { type: Number, default: 12.0 },
+      distributionFrequency: {
+        type: String,
+        enum: ['daily', 'monthly', 'quarterly'],
+        default: 'monthly',
+      },
+      tenantType: { type: String, default: 'Agro-processing & Organic Farming' },
+      leaseDurationYears: { type: Number, default: 5 },
     },
     dailyReturnConfig: {
       defaultRate: {
         type: Number,
         default: 0.1,
-        min: 0,
+        min: [0, 'Rate cannot be negative'],
+        max: [10, 'Daily rate cannot exceed 10%'],
+      },
+      baseRatePercentage: {
+        type: Number,
+        default: 0.1,
       },
       isActive: {
         type: Boolean,
@@ -108,21 +150,23 @@ const LandSchema = new Schema<ILandDocument>(
   }
 );
 
-// Indexes
-LandSchema.index({ status: 1 });
-LandSchema.index({ location: 1 });
-
-// Pre-save: recalculate investment percentage
-LandSchema.pre('save', function (next) {
+LandSchema.pre<ILandDocument>('save', function () {
   if (this.totalValue > 0) {
-    this.investmentPercentage =
-      Math.round((this.totalInvested / this.totalValue) * 10000) / 100;
+    this.investmentPercentage = Math.min(
+      100,
+      parseFloat(((this.totalInvested / this.totalValue) * 100).toFixed(2))
+    );
+    this.availableInvestment = Math.max(0, this.totalValue - this.totalInvested);
+
+    if (this.availableInvestment === 0 && this.status === 'active') {
+      this.status = 'fully_funded';
+    }
   }
-  if (this.availableInvestment <= 0 && this.totalInvested >= this.totalValue) {
-    this.status = 'fully_funded';
-  }
-  next();
 });
+
+LandSchema.index({ status: 1 });
+LandSchema.index({ publicApproved: 1 });
+LandSchema.index({ featured: 1 });
 
 const Land: Model<ILandDocument> =
   mongoose.models.Land || mongoose.model<ILandDocument>('Land', LandSchema);
