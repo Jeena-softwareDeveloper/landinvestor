@@ -34,18 +34,11 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
-
-  const handleFillDemo = () => {
-    setValue("email", "admin@landvest.com");
-    setValue("password", "password123");
-    setError(null);
-  };
 
   const onSubmit = async (data: LoginFormValues) => {
     setError(null);
@@ -229,30 +222,6 @@ export default function LoginPage() {
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </form>
-
-            {/* Demo Credentials Quick-Fill Helper Box */}
-            <div className="mt-6 pt-5 border-t border-slate-100">
-              <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-200/80 flex items-center justify-between gap-3">
-                <div className="text-xs text-slate-600">
-                  <div className="font-semibold text-slate-800 flex items-center gap-1.5 mb-0.5">
-                    <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                    <span>Demo Credentials</span>
-                  </div>
-                  <div className="text-[11px] text-slate-500 font-mono">
-                    admin@landvest.com / password123
-                  </div>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleFillDemo}
-                  className="text-xs h-8 px-2.5 bg-white border-slate-300 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 transition-colors"
-                >
-                  Quick Fill
-                </Button>
-              </div>
-            </div>
 
             {/* Footer / Copyright */}
             <div className="mt-6 text-center text-xs text-slate-400 space-y-1">
