@@ -41,7 +41,7 @@ export default function AdminUpiManagementPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [upiId, setUpiId] = useState('');
   const [displayName, setDisplayName] = useState('');
-  const [provider, setProvider] = useState('ICICI Merchant Banking');
+  const [provider, setProvider] = useState('');
   const [priority, setPriority] = useState(1);
   const [weight, setWeight] = useState(1);
   const [dailyTxLimit, setDailyTxLimit] = useState(50);
@@ -117,7 +117,7 @@ export default function AdminUpiManagementPage() {
     setEditingId(null);
     setUpiId('');
     setDisplayName('');
-    setProvider('ICICI Merchant Banking');
+    setProvider('');
     setPriority(1);
     setWeight(1);
     setDailyTxLimit(50);

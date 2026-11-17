@@ -147,7 +147,7 @@ export default function CustomerProfilePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormInput label="Customer ID" value={customer?.customerId || 'CUST-00000'} disabled readOnly />
+            <FormInput label="Customer ID" value={customer?.customerId || '—'} disabled readOnly />
             <FormInput label="Full Legal Name" value={customer?.fullName || ''} disabled readOnly />
             <FormInput label="Mobile Number" value={customer?.mobile || ''} disabled readOnly />
             <FormInput label="Email Address" value={customer?.email || ''} disabled readOnly />

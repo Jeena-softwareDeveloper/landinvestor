@@ -74,19 +74,19 @@ export default function CustomerWithdrawalsPage() {
     fetchWithdrawals();
   }, []);
 
-  const totalInvested = tierInfo?.totalInvested || stats.totalInvested || 5100000;
+  const totalInvested = tierInfo?.totalInvested ?? stats.totalInvested ?? 0;
   const tierName =
-    tierInfo?.tierName || tierInfo?.name || stats.tierInfo?.name || stats.tierInfo?.tierName || 'Diamond Investor';
+    tierInfo?.tierName || tierInfo?.name || stats.tierInfo?.name || stats.tierInfo?.tierName || 'Investor';
   const withdrawalLimitPercentage =
-    tierInfo?.withdrawalLimitPercentage || stats.tierInfo?.withdrawalLimitPercentage || 100;
+    tierInfo?.withdrawalLimitPercentage ?? stats.tierInfo?.withdrawalLimitPercentage ?? 0;
   const maxTierLimit =
-    tierInfo?.maxWithdrawalLimit || stats.maxWithdrawalLimit || totalInvested;
-  const payoutSlaHours = tierInfo?.payoutSlaHours || stats.tierInfo?.payoutSlaHours || 2;
+    tierInfo?.maxWithdrawalLimit ?? stats.maxWithdrawalLimit ?? totalInvested;
+  const payoutSlaHours = tierInfo?.payoutSlaHours ?? stats.tierInfo?.payoutSlaHours ?? 24;
 
   const availableBalance =
     stats.availableWithdrawalBalance !== undefined
       ? stats.availableWithdrawalBalance
-      : 528000;
+      : (stats.availableBalance ?? 0);
 
   const maxAllowedLimit = Math.min(availableBalance, maxTierLimit);
 
@@ -331,7 +331,7 @@ export default function CustomerWithdrawalsPage() {
               Total Accrued Rental Yield
             </span>
             <div className="text-xl sm:text-2xl font-normal sm:font-medium text-[#142B4A]">
-              {formatCurrency(stats.totalAccruedReturns || 720000)}
+              {formatCurrency(stats.totalAccruedReturns || 0)}
             </div>
             <span className="text-[10px] text-slate-400 font-normal">
               Total verified returns across all parcels
@@ -529,10 +529,18 @@ export default function CustomerWithdrawalsPage() {
                     <span className="font-normal text-slate-900">Direct Instant UPI</span>
                     {paymentMethod === 'upi' && <Check className="w-4 h-4 text-blue-600 stroke-[1.75]" />}
                   </div>
-                  <p className="font-mono text-[11px] text-blue-600 mt-1 truncate font-normal">
-                    {customerDetails?.upiId || 'rajesh.sharma@okhdfcbank'}
-                  </p>
-                  <span className="text-[10px] text-slate-400 block mt-0.5 font-normal">Verified Primary VPA</span>
+                  {customerDetails?.upiId ? (
+                    <p className="font-mono text-[11px] text-blue-600 mt-1 truncate font-normal">
+                      {customerDetails.upiId}
+                    </p>
+                  ) : (
+                    <p className="text-[11px] text-amber-600 mt-1 truncate font-normal">
+                      Not configured (Update in Profile)
+                    </p>
+                  )}
+                  <span className="text-[10px] text-slate-400 block mt-0.5 font-normal">
+                    {customerDetails?.upiId ? 'Verified Primary VPA' : 'Required for UPI settlement'}
+                  </span>
                 </button>
 
                 <button
@@ -548,11 +556,19 @@ export default function CustomerWithdrawalsPage() {
                     <span className="font-normal text-slate-900">Bank NEFT / IMPS</span>
                     {paymentMethod === 'bank_transfer' && <Check className="w-4 h-4 text-blue-600 stroke-[1.75]" />}
                   </div>
-                  <p className="font-normal text-[11px] text-slate-800 mt-1 truncate">
-                    {customerDetails?.bankDetails?.bankName || 'HDFC Bank'} ••••
-                    {customerDetails?.bankDetails?.accountNumber?.slice(-4) || '7890'}
-                  </p>
-                  <span className="text-[10px] text-slate-400 block mt-0.5 font-normal">Verified Settlement A/C</span>
+                  {customerDetails?.bankDetails?.accountNumber ? (
+                    <p className="font-normal text-[11px] text-slate-800 mt-1 truncate">
+                      {customerDetails?.bankDetails?.bankName || 'Bank'} ••••
+                      {customerDetails.bankDetails.accountNumber.slice(-4)}
+                    </p>
+                  ) : (
+                    <p className="text-[11px] text-amber-600 mt-1 truncate font-normal">
+                      Not configured (Update in Profile)
+                    </p>
+                  )}
+                  <span className="text-[10px] text-slate-400 block mt-0.5 font-normal">
+                    {customerDetails?.bankDetails?.accountNumber ? 'Verified Settlement A/C' : 'Required for NEFT/IMPS'}
+                  </span>
                 </button>
               </div>
             </div>

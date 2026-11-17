@@ -17,3 +17,4 @@ const PlatformSetting: Model<IPlatformSettingDocument> =
   mongoose.model<IPlatformSettingDocument>('PlatformSetting', PlatformSettingSchema);
 
 export default PlatformSetting;
+

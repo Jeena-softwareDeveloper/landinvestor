@@ -82,8 +82,8 @@ export async function GET(req: NextRequest) {
       },
       withdrawalNotice: defaultWithdrawalNotice,
       customerDetails: {
-        upiId: customer.upiId || 'rajesh.sharma@okhdfcbank',
-        bankDetails: customer.bankDetails,
+        upiId: customer.upiId || '',
+        bankDetails: customer.bankDetails || null,
       },
     });
   } catch (error: any) {
