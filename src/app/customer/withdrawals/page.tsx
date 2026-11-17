@@ -5,12 +5,18 @@ import {
   Wallet,
   Clock,
   CheckCircle,
+  CheckCircle2,
   ShieldCheck,
-  CreditCard,
   Award,
+  Crown,
+  Sparkles,
   Info,
-  Building,
   Check,
+  ArrowRight,
+  Layers,
+  BarChart3,
+  Calendar,
+  TrendingUp,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
@@ -85,7 +91,7 @@ export default function CustomerWithdrawalsPage() {
   const availableBalance =
     stats.availableWithdrawalBalance !== undefined
       ? stats.availableWithdrawalBalance
-      : 558000;
+      : 533000;
 
   const maxAllowedLimit = Math.min(availableBalance, maxTierLimit);
 
@@ -145,125 +151,240 @@ export default function CustomerWithdrawalsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* ─── Page Header ─────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-black text-[#142B4A] tracking-tight">Returns &amp; Payouts</h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Track your accrued commercial lease yields and disburse funds to your verified bank/UPI.
-          </p>
+    <div className="max-w-2xl mx-auto space-y-4 sm:space-y-5 pb-8">
+      {/* ─── 1. Top 3D Hero Section ─────────────────────────────────────── */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#0a4fd8] via-[#125ef0] to-[#1e73fa] shadow-xl p-3 sm:p-5 text-center border border-blue-400/30">
+        {/* Soft background glow spheres */}
+        <div className="absolute top-0 left-1/3 w-64 h-64 bg-cyan-300/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 right-10 w-48 h-48 bg-blue-600/30 rounded-full blur-2xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col items-center">
+          {/* 3D Visual Asset (Growth Chart, Gold ₹ Coins, Glowing Leather Wallet) */}
+          <img
+            src="/images/wallet/wallet-hero-3d.png"
+            alt="3D Wallet and Growth Chart"
+            className="w-full max-h-56 sm:max-h-64 object-contain mx-auto drop-shadow-2xl select-none"
+          />
         </div>
-        <Button
-          variant="secondary"
-          size="sm"
-          className="font-bold shadow-sm bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
+      </div>
+
+      {/* ─── 2. Primary Action Capsule Button ──────────────────────────── */}
+      <div>
+        <button
+          type="button"
           onClick={() => {
             setAmount(Math.min(25000, maxAllowedLimit > 500 ? maxAllowedLimit : 500));
             setShowRequestModal(true);
           }}
           disabled={availableBalance < 500}
+          className="w-full group relative overflow-hidden rounded-2xl sm:rounded-full py-3.5 sm:py-4 px-5 sm:px-7 bg-gradient-to-r from-[#1762ee] via-[#2d77fc] to-[#1762ee] hover:from-[#1357d6] hover:to-[#1357d6] text-white font-black shadow-lg shadow-blue-500/35 border border-blue-300/40 transition-all transform active:scale-[0.99] flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
-          <Wallet className="w-4 h-4 mr-1.5" /> Request Return Withdrawal
-        </Button>
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center border border-white/30 text-white shadow-inner">
+              <Wallet className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-extrabold text-sm sm:text-base tracking-wider uppercase text-left">
+              Request Return Withdrawal
+            </span>
+          </div>
+          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 transition-transform">
+            <ArrowRight className="w-5 h-5 text-white" />
+          </div>
+        </button>
       </div>
 
-      {/* ─── Trustworthy Important Notice & Tier-Based Limit Banner ─── */}
-      <div className="bg-gradient-to-r from-[#0d1e33] via-[#142B4A] to-[#1a3860] border border-blue-500/30 rounded-2xl p-5 sm:p-6 text-white shadow-lg relative overflow-hidden">
-        {/* Subtle glow */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative z-10">
-          <div className="space-y-2 max-w-2xl">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 text-xs font-black uppercase tracking-wider">
-                <Award className="w-3.5 h-3.5 text-amber-400" />
-                {tierName}
-              </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-semibold">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                SEBI REITs Governance Verified
-              </span>
+      {/* ─── 3. Dual Metallic Badges (1 Row) ───────────────────────────── */}
+      <div className="grid grid-cols-2 gap-3">
+        {/* Left: Metallic Gold Tier Badge */}
+        <div className="relative overflow-hidden rounded-2xl py-3 px-3.5 bg-gradient-to-r from-[#b38322] via-[#e5b342] to-[#ad7c1a] border border-amber-200/80 shadow-md flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-[#6a4200]/30 flex items-center justify-center border border-amber-200/50 shrink-0">
+              <Crown className="w-4 h-4 text-amber-100" />
             </div>
-
-            <h3 className="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-2">
-              <Info className="w-4 h-4 text-blue-400 shrink-0" />
-              <span>Important Policy: Withdrawal Limits Scaled to Active Investment</span>
-            </h3>
-
-            <p className="text-xs sm:text-sm text-blue-100/90 leading-relaxed font-normal">
-              {withdrawalNotice ||
-                'In accordance with institutional property trust liquidity governance, withdrawal limits per disbursement cycle are calculated based on your total active invested capital to safeguard uninterrupted commercial tenant lease operations.'}
-            </p>
-
-            <div className="flex flex-wrap items-center gap-2 sm:gap-4 pt-1 text-xs text-blue-200">
-              <span>
-                Active Investment: <strong className="text-white font-bold">{formatCurrency(totalInvested)}</strong>
-              </span>
-              <span>•</span>
-              <span>
-                Allowed Limit ({withdrawalLimitPercentage}%):{' '}
-                <strong className="text-emerald-400 font-bold">{formatCurrency(maxTierLimit)}</strong>
-              </span>
-              <span>•</span>
-              <span>
-                Turnaround: <strong className="text-white font-bold">{payoutSlaHours}h SLA</strong>
-              </span>
+            <div className="text-left leading-tight">
+              <div className="text-[11px] sm:text-xs font-black text-[#382100] tracking-wider uppercase truncate">
+                {tierName.toUpperCase()} TIER
+              </div>
+              <div className="text-[9px] text-[#4d2f00]/80 font-bold hidden sm:block">
+                Priority Allocation
+              </div>
             </div>
           </div>
+          <Sparkles className="w-4 h-4 text-amber-100 opacity-90 shrink-0" />
+        </div>
 
-          <div className="shrink-0 bg-white/10 rounded-xl p-4 border border-white/15 text-left lg:text-right space-y-1 backdrop-blur-xs">
-            <div className="text-[11px] text-blue-200 uppercase font-bold tracking-wider">
-              Maximum Allowed per Request
+        {/* Right: Metallic Emerald Governance Badge */}
+        <div className="relative overflow-hidden rounded-2xl py-3 px-3.5 bg-gradient-to-r from-[#0b8457] via-[#10a870] to-[#08734b] border border-emerald-300/60 shadow-md flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-emerald-900/30 flex items-center justify-center border border-emerald-200/40 shrink-0">
+              <ShieldCheck className="w-4 h-4 text-emerald-100" />
             </div>
-            <div className="text-2xl sm:text-3xl font-black text-emerald-400">
-              {formatCurrency(maxAllowedLimit)}
+            <div className="text-left leading-tight">
+              <div className="text-[11px] sm:text-xs font-black text-white tracking-wide truncate">
+                SEBI REITs
+              </div>
+              <div className="text-[9px] text-emerald-100 font-semibold truncate">
+                Governance Verified
+              </div>
             </div>
-            <p className="text-[11px] text-slate-300">
-              Award: <strong className="text-amber-300 font-semibold">{awardTitle}</strong>
-            </p>
           </div>
+          <CheckCircle2 className="w-4 h-4 text-emerald-200 opacity-90 shrink-0" />
         </div>
       </div>
 
-      {/* ─── Summary Cards ────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-xs space-y-1">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
-            Total Accrued Rental Yield
-          </span>
-          <div className="text-2xl font-black text-[#142B4A]">
-            {formatCurrency(stats.totalAccruedReturns || 720000)}
+      {/* ─── 4. 3D Financial Vault Card (Dark Navy) ────────────────────── */}
+      <div className="relative rounded-3xl p-5 sm:p-6 bg-gradient-to-b from-[#091526] via-[#0d1e36] to-[#07101e] border border-blue-500/25 shadow-2xl overflow-hidden space-y-5">
+        {/* Ambient lighting glows */}
+        <div className="absolute top-0 right-1/4 w-72 h-72 bg-blue-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-10 w-56 h-56 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+
+        {/* Top: 3 Parameter Rows on Left + 3D Security Safe on Right */}
+        <div className="grid grid-cols-1 sm:grid-cols-12 gap-5 items-center relative z-10">
+          {/* Left Parameter Rows (7 cols) */}
+          <div className="sm:col-span-7 space-y-3">
+            {/* Row 1: Active Investment */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-400/30 flex items-center justify-center shrink-0 shadow-inner">
+                <Layers className="w-5 h-5 text-cyan-400" />
+              </div>
+              <div className="flex-1 bg-white/[0.06] border border-white/10 rounded-2xl px-4 py-2.5 flex items-center justify-between backdrop-blur-xs">
+                <span className="text-[11px] text-slate-300 font-medium">Active Investment</span>
+                <span className="text-xs sm:text-sm font-black text-white tracking-wide">
+                  {formatCurrency(totalInvested)}
+                </span>
+              </div>
+            </div>
+
+            {/* Row 2: Allowed Limit */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center shrink-0 shadow-inner">
+                <BarChart3 className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div className="flex-1 bg-white/[0.06] border border-white/10 rounded-2xl px-4 py-2.5 flex items-center justify-between backdrop-blur-xs">
+                <span className="text-[11px] text-slate-300 font-medium">
+                  Allowed Limit ({withdrawalLimitPercentage}%)
+                </span>
+                <span className="text-xs sm:text-sm font-black text-emerald-400 tracking-wide">
+                  {formatCurrency(maxTierLimit)}
+                </span>
+              </div>
+            </div>
+
+            {/* Row 3: SLA Turnaround */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-purple-500/15 border border-purple-400/30 flex items-center justify-center shrink-0 shadow-inner">
+                <Calendar className="w-5 h-5 text-purple-400" />
+              </div>
+              <div className="flex-1 bg-white/[0.06] border border-white/10 rounded-2xl px-4 py-2.5 flex items-center justify-between backdrop-blur-xs">
+                <span className="text-[11px] text-slate-300 font-medium">Turnaround</span>
+                <span className="text-xs sm:text-sm font-black text-white tracking-wide">
+                  {payoutSlaHours}h Instant SLA
+                </span>
+              </div>
+            </div>
           </div>
-          <p className="text-[11px] text-slate-400">Total verified returns across all parcels</p>
+
+          {/* Right: 3D Metallic Blue Vault / Safe (5 cols) */}
+          <div className="sm:col-span-5 flex items-center justify-center py-1 sm:py-2">
+            <div className="relative group">
+              <div className="absolute -inset-3 bg-blue-500/20 rounded-full blur-xl group-hover:bg-blue-500/30 transition-all pointer-events-none" />
+              <img
+                src="/images/wallet/vault-3d.png"
+                alt="3D Financial Security Safe"
+                className="relative w-36 h-36 sm:w-44 sm:h-44 object-contain mx-auto drop-shadow-[0_12px_28px_rgba(0,140,255,0.4)]"
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-xs space-y-1">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
-            Total Returns Disbursed
-          </span>
-          <div className="text-2xl font-black text-purple-600">
-            {formatCurrency(stats.totalReturnsPaid || 162000)}
+        {/* Bottom Inner Emerald Green Capsule Bar */}
+        <div className="relative z-10 rounded-2xl sm:rounded-full p-2.5 sm:px-5 bg-gradient-to-r from-[#03543f] via-[#059669] to-[#047857] border border-emerald-400/60 shadow-[0_4px_25px_rgba(16,185,129,0.35)] flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="w-11 h-11 rounded-full bg-amber-400/20 border-2 border-amber-300/80 flex items-center justify-center shrink-0 shadow-inner">
+              <Wallet className="w-5 h-5 text-amber-300" />
+            </div>
+            <div className="text-left">
+              <div className="text-[10px] sm:text-[11px] font-bold text-emerald-100 uppercase tracking-wider">
+                Available for Instant Withdrawal
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-sm">
+                {formatCurrency(availableBalance)}
+              </div>
+            </div>
           </div>
-          <p className="text-[11px] text-slate-400">Credited to verified bank/UPI destination</p>
-        </div>
 
-        <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-xs space-y-1">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">
-            Available Withdrawal Balance
-          </span>
-          <div className="text-2xl font-black text-emerald-600">
-            {formatCurrency(availableBalance)}
+          {/* Right: 3D Gold Coins stack */}
+          <div className="shrink-0 flex items-center gap-3 w-full sm:w-auto justify-end">
+            <img
+              src="/images/wallet/coins-3d.png"
+              alt="3D Gold Coins Stack"
+              className="h-11 sm:h-13 object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]"
+            />
           </div>
-          <p className="text-[11px] text-slate-400">Ready for instant payout request</p>
         </div>
       </div>
 
-      {/* ─── History Table ────────────────────────────────────────── */}
+      {/* ─── 5. Secondary Yield Metric Card ────────────────────────────── */}
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-sm flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="shrink-0">
+            <img
+              src="/images/wallet/hand-coin-3d.png"
+              alt="Hand holding coin"
+              className="w-12 h-12 object-contain"
+            />
+          </div>
+          <div>
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+              Total Accrued Rental Yield
+            </span>
+            <div className="text-xl sm:text-2xl font-black text-[#142B4A]">
+              {formatCurrency(stats.totalAccruedReturns || 720000)}
+            </div>
+            <span className="text-[10px] text-slate-400">Total verified returns across all parcels</span>
+          </div>
+        </div>
+        <div className="shrink-0 hidden sm:flex items-center justify-center w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100">
+          <TrendingUp className="w-6 h-6 stroke-[2.5]" />
+        </div>
+      </div>
+
+      {/* ─── 6. Institutional Transparency & Governance Policy Notice ──── */}
+      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-2 text-slate-700">
+        <div className="flex items-center gap-2">
+          <Info className="w-4 h-4 text-blue-600 shrink-0" />
+          <h4 className="font-bold text-xs sm:text-sm text-[#142B4A]">
+            Important Policy: Withdrawal Limits Scaled to Active Investment
+          </h4>
+        </div>
+        <p className="text-[11px] sm:text-xs text-slate-600 leading-relaxed">
+          {withdrawalNotice ||
+            'In accordance with institutional property trust liquidity governance, withdrawal limits per disbursement cycle are calculated based on your total active invested capital to safeguard uninterrupted commercial tenant lease operations.'}
+        </p>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4 pt-1 text-[11px] text-slate-500">
+          <span>
+            Tier Level: <strong className="text-slate-800 font-bold">{tierName}</strong>
+          </span>
+          <span>•</span>
+          <span>
+            Max Limit: <strong className="text-emerald-700 font-bold">{formatCurrency(maxAllowedLimit)}</strong>
+          </span>
+          <span>•</span>
+          <span>
+            Award: <strong className="text-amber-700 font-bold">{awardTitle}</strong>
+          </span>
+        </div>
+      </div>
+
+      {/* ─── 7. Disbursement & Withdrawal History Table ────────────────── */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-          <h3 className="font-bold text-sm text-[#142B4A]">Disbursement &amp; Withdrawal History</h3>
-          <span className="text-xs text-slate-400 font-medium">{withdrawals.length} Total Records</span>
+        <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
+          <h3 className="font-bold text-xs sm:text-sm text-[#142B4A]">
+            Disbursement &amp; Withdrawal History
+          </h3>
+          <span className="text-[11px] text-slate-400 font-medium">
+            {withdrawals.length} Total Records
+          </span>
         </div>
 
         {withdrawals.length === 0 ? (
@@ -290,21 +411,21 @@ export default function CustomerWithdrawalsPage() {
                     <td className="py-3 px-4 text-slate-700 whitespace-nowrap">
                       {formatDate(w.requestDate || w.createdAt)}
                     </td>
-                    <td className="py-3 px-4 font-bold text-[#142B4A] text-sm">
+                    <td className="py-3 px-4 font-bold text-[#142B4A] text-sm whitespace-nowrap">
                       {formatCurrency(w.requestedAmount)}
                     </td>
                     <td className="py-3 px-4 text-slate-600">
                       {w.paymentMethod === 'upi' ? (
-                        <span className="font-mono text-[11px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-100">
+                        <span className="font-mono text-[11px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-100 whitespace-nowrap">
                           UPI: {w.paymentDetails?.upiId || w.upiId || 'Primary UPI'}
                         </span>
                       ) : (
-                        <span className="text-[11px] font-medium text-slate-700">
+                        <span className="text-[11px] font-medium text-slate-700 whitespace-nowrap">
                           Bank: {w.paymentDetails?.bankDetails?.bankName || w.bankDetails?.bankName || 'NEFT'}
                         </span>
                       )}
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3 px-4 whitespace-nowrap">
                       <span
                         className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                           w.status === 'paid'
@@ -324,10 +445,10 @@ export default function CustomerWithdrawalsPage() {
                         {w.status}
                       </span>
                     </td>
-                    <td className="py-3 px-4 font-mono text-[11px] text-slate-700">
+                    <td className="py-3 px-4 font-mono text-[11px] text-slate-700 whitespace-nowrap">
                       {w.paymentReference || '—'}
                     </td>
-                    <td className="py-3 px-4 text-slate-500 text-[11px]">
+                    <td className="py-3 px-4 text-slate-500 text-[11px] max-w-xs truncate">
                       {w.customerNotes || w.rejectionReason || 'Rental yield distribution'}
                     </td>
                   </tr>
@@ -338,7 +459,7 @@ export default function CustomerWithdrawalsPage() {
         )}
       </div>
 
-      {/* ─── Request Withdrawal Modal ───────────────────────────────── */}
+      {/* ─── 8. Request Withdrawal Modal ───────────────────────────────── */}
       {showRequestModal && (
         <Modal
           isOpen={showRequestModal}

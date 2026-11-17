@@ -96,8 +96,8 @@ export default function CustomerLayout({
   const navLinks = [
     { label: 'Dashboard', shortLabel: 'Dashboard', href: '/customer/dashboard', icon: LayoutDashboard },
     { label: 'Available Lands', shortLabel: 'Lands', href: '/customer/lands', icon: Building },
+    { label: 'Wallet & Payouts', shortLabel: 'Wallet', href: '/customer/withdrawals', icon: Wallet, isCenter: true },
     { label: 'My Investments', shortLabel: 'Investments', href: '/customer/investments', icon: TrendingUp },
-    { label: 'Returns & Payouts', shortLabel: 'Returns', href: '/customer/withdrawals', icon: Wallet },
     { label: 'My Profile', shortLabel: 'Profile', href: '/customer/profile', icon: User },
   ];
 
@@ -177,7 +177,37 @@ export default function CustomerLayout({
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 flex items-center justify-around h-16 px-1 shadow-lg">
         {navLinks.map((link) => {
           const Icon = link.icon;
-          const isActive = pathname === link.href || (link.href !== '/customer/dashboard' && pathname.startsWith(link.href));
+          const isActive =
+            pathname === link.href ||
+            (link.href !== '/customer/dashboard' && pathname.startsWith(link.href));
+
+          if (link.isCenter) {
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="flex flex-col items-center justify-center flex-1 py-1 relative"
+              >
+                <div
+                  className={`w-14 h-10 rounded-2xl flex items-center justify-center transition-all ${
+                    isActive
+                      ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white shadow-lg shadow-blue-500/40 -mt-3 ring-4 ring-white'
+                      : 'bg-slate-100 text-slate-500 hover:text-blue-600'
+                  }`}
+                >
+                  <Icon className="w-5 h-5 text-white" />
+                </div>
+                <span
+                  className={`text-[10px] mt-0.5 font-bold ${
+                    isActive ? 'text-blue-600' : 'text-slate-400'
+                  }`}
+                >
+                  {link.shortLabel}
+                </span>
+              </Link>
+            );
+          }
+
           return (
             <Link
               key={link.href}
