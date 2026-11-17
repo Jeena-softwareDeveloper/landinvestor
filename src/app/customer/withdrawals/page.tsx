@@ -7,12 +7,11 @@ import {
   CheckCircle,
   CheckCircle2,
   ShieldCheck,
-  Award,
   Crown,
   Sparkles,
-  Info,
   Check,
   ArrowRight,
+  ArrowDownLeft,
   Layers,
   BarChart3,
   Calendar,
@@ -34,7 +33,6 @@ export default function CustomerWithdrawalsPage() {
   const [tierInfo, setTierInfo] = useState<any>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [customerDetails, setCustomerDetails] = useState<any>(null);
-  const [withdrawalNotice, setWithdrawalNotice] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
   // Request Payout Modal
@@ -57,7 +55,6 @@ export default function CustomerWithdrawalsPage() {
       if (wJson.success) {
         setWithdrawals(wJson.withdrawals || []);
         if (wJson.tierInfo) setTierInfo(wJson.tierInfo);
-        if (wJson.withdrawalNotice) setWithdrawalNotice(wJson.withdrawalNotice);
         if (wJson.customerDetails) setCustomerDetails(wJson.customerDetails);
       }
       if (dJson.success) {
@@ -85,8 +82,6 @@ export default function CustomerWithdrawalsPage() {
   const maxTierLimit =
     tierInfo?.maxWithdrawalLimit || stats.maxWithdrawalLimit || totalInvested;
   const payoutSlaHours = tierInfo?.payoutSlaHours || stats.tierInfo?.payoutSlaHours || 2;
-  const awardTitle =
-    tierInfo?.awardTitle || stats.tierInfo?.awardTitle || 'REITs Council Diamond Crown';
 
   const availableBalance =
     stats.availableWithdrawalBalance !== undefined
@@ -349,117 +344,119 @@ export default function CustomerWithdrawalsPage() {
         </div>
       </div>
 
-      {/* ─── 6. Institutional Transparency & Governance Policy Notice ──── */}
-      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-2 text-slate-700">
-        <div className="flex items-center gap-2">
-          <Info className="w-4 h-4 text-blue-600 shrink-0" />
-          <h4 className="font-bold text-xs sm:text-sm text-[#142B4A]">
-            Important Policy: Withdrawal Limits Scaled to Active Investment
-          </h4>
-        </div>
-        <p className="text-[11px] sm:text-xs text-slate-600 leading-relaxed">
-          {withdrawalNotice ||
-            'In accordance with institutional property trust liquidity governance, withdrawal limits per disbursement cycle are calculated based on your total active invested capital to safeguard uninterrupted commercial tenant lease operations.'}
-        </p>
-        <div className="flex flex-wrap items-center gap-2 sm:gap-4 pt-1 text-[11px] text-slate-500">
-          <span>
-            Tier Level: <strong className="text-slate-800 font-bold">{tierName}</strong>
-          </span>
-          <span>•</span>
-          <span>
-            Max Limit: <strong className="text-emerald-700 font-bold">{formatCurrency(maxAllowedLimit)}</strong>
-          </span>
-          <span>•</span>
-          <span>
-            Award: <strong className="text-amber-700 font-bold">{awardTitle}</strong>
-          </span>
-        </div>
-      </div>
-
-      {/* ─── 7. Disbursement & Withdrawal History Table ────────────────── */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+      {/* ─── 6. Recent Disbursements / Withdrawal History (Clean Mobile Card List) ─── */}
+      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
         <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
-          <h3 className="font-bold text-xs sm:text-sm text-[#142B4A]">
-            Disbursement &amp; Withdrawal History
-          </h3>
-          <span className="text-[11px] text-slate-400 font-medium">
-            {withdrawals.length} Total Records
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+              <ArrowDownLeft className="w-4 h-4 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="font-bold text-sm text-[#142B4A]">
+                Withdrawal History
+              </h3>
+              <p className="text-[10px] text-slate-400">Recent settlement disbursements</p>
+            </div>
+          </div>
+          <span className="text-[11px] font-semibold text-slate-500 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-100">
+            {withdrawals.length} Records
           </span>
         </div>
 
         {withdrawals.length === 0 ? (
           <div className="py-12 text-center space-y-2">
-            <Wallet className="w-8 h-8 text-slate-300 mx-auto" />
-            <p className="text-xs text-slate-500">No withdrawal requests found.</p>
+            <div className="w-12 h-12 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mx-auto text-slate-300">
+              <Wallet className="w-6 h-6" />
+            </div>
+            <p className="text-xs text-slate-400 font-medium">No withdrawal requests found</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-100">
-                <tr>
-                  <th className="py-3 px-4">Request Date</th>
-                  <th className="py-3 px-4">Amount</th>
-                  <th className="py-3 px-4">Destination</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4">Payment Ref / UTR</th>
-                  <th className="py-3 px-4">Remarks</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {withdrawals.map((w: any) => (
-                  <tr key={w._id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-3 px-4 text-slate-700 whitespace-nowrap">
-                      {formatDate(w.requestDate || w.createdAt)}
-                    </td>
-                    <td className="py-3 px-4 font-bold text-[#142B4A] text-sm whitespace-nowrap">
-                      {formatCurrency(w.requestedAmount)}
-                    </td>
-                    <td className="py-3 px-4 text-slate-600">
-                      {w.paymentMethod === 'upi' ? (
-                        <span className="font-mono text-[11px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-100 whitespace-nowrap">
-                          UPI: {w.paymentDetails?.upiId || w.upiId || 'Primary UPI'}
-                        </span>
+          <div className="divide-y divide-slate-100">
+            {withdrawals.map((w: any) => {
+              const isPaid = w.status === 'paid';
+              const isRejected = w.status === 'rejected';
+              const isProcessing = w.status === 'processing';
+              const isBank = w.paymentMethod === 'bank_transfer';
+              const destinationName = isBank
+                ? (w.paymentDetails?.bankDetails?.bankName || w.bankDetails?.bankName || 'HDFC Bank')
+                : (w.paymentDetails?.upiId || w.upiId || 'Primary UPI');
+
+              return (
+                <div
+                  key={w._id}
+                  className="p-3.5 sm:p-4 hover:bg-slate-50/70 transition-colors flex items-center justify-between gap-3"
+                >
+                  {/* Left: Destination & Date */}
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${
+                        isPaid
+                          ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/60'
+                          : isRejected
+                          ? 'bg-red-50 text-red-600 border border-red-200/60'
+                          : 'bg-amber-50 text-amber-600 border border-amber-200/60'
+                      }`}
+                    >
+                      {isPaid ? (
+                        <ArrowDownLeft className="w-5 h-5" />
                       ) : (
-                        <span className="text-[11px] font-medium text-slate-700 whitespace-nowrap">
-                          Bank: {w.paymentDetails?.bankDetails?.bankName || w.bankDetails?.bankName || 'NEFT'}
-                        </span>
+                        <Clock className="w-5 h-5" />
                       )}
-                    </td>
-                    <td className="py-3 px-4 whitespace-nowrap">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                          w.status === 'paid'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : w.status === 'rejected'
-                            ? 'bg-red-100 text-red-800'
-                            : w.status === 'processing'
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'bg-amber-100 text-amber-800'
-                        }`}
-                      >
-                        {w.status === 'paid' ? (
-                          <CheckCircle className="w-3 h-3" />
-                        ) : (
-                          <Clock className="w-3 h-3" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-bold text-xs sm:text-sm text-[#142B4A] truncate flex items-center gap-1.5">
+                        <span>{isBank ? 'Bank Transfer' : 'UPI Settlement'}</span>
+                        <span className="text-slate-300">•</span>
+                        <span className="text-[11px] font-medium text-slate-500 truncate">
+                          {destinationName}
+                        </span>
+                      </div>
+                      <div className="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
+                        <span>{formatDate(w.requestDate || w.createdAt)}</span>
+                        {w.paymentReference && (
+                          <>
+                            <span>•</span>
+                            <span className="font-mono text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.2 rounded border border-blue-100/80">
+                              Ref: {w.paymentReference}
+                            </span>
+                          </>
                         )}
-                        {w.status}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 font-mono text-[11px] text-slate-700 whitespace-nowrap">
-                      {w.paymentReference || '—'}
-                    </td>
-                    <td className="py-3 px-4 text-slate-500 text-[11px] max-w-xs truncate">
-                      {w.customerNotes || w.rejectionReason || 'Rental yield distribution'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Amount & Status Badge */}
+                  <div className="text-right shrink-0">
+                    <div className="text-sm sm:text-base font-black text-[#142B4A]">
+                      {formatCurrency(w.requestedAmount)}
+                    </div>
+                    <span
+                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mt-1 ${
+                        isPaid
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : isRejected
+                          ? 'bg-red-100 text-red-800'
+                          : isProcessing
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-amber-100 text-amber-800'
+                      }`}
+                    >
+                      {isPaid ? (
+                        <CheckCircle className="w-3 h-3 text-emerald-600" />
+                      ) : (
+                        <Clock className="w-3 h-3" />
+                      )}
+                      <span>{isPaid ? 'Completed' : w.status}</span>
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
 
-      {/* ─── 8. Request Withdrawal Modal ───────────────────────────────── */}
+      {/* ─── 7. Request Withdrawal Modal ───────────────────────────────── */}
       {showRequestModal && (
         <Modal
           isOpen={showRequestModal}
