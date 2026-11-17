@@ -116,21 +116,11 @@ export default function CustomerProfilePage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-black text-[#142B4A] tracking-tight">Investor Profile &amp; Banking</h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Manage your verified payout bank destination, KYC credentials, and contact details.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="self-start sm:self-auto inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors cursor-pointer shadow-2xs"
-        >
-          <LogOut className="w-4 h-4 text-red-500" />
-          <span>Log Out</span>
-        </button>
+      <div>
+        <h1 className="text-2xl font-black text-[#142B4A] tracking-tight">Investor Profile &amp; Banking</h1>
+        <p className="text-xs text-slate-500 mt-1">
+          Manage your verified payout bank destination, KYC credentials, and contact details.
+        </p>
       </div>
 
       <form onSubmit={handleSaveProfile} className="space-y-6">
