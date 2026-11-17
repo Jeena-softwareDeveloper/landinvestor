@@ -15,25 +15,42 @@ export const PUT = withAuth(
         return NextResponse.json({ success: false, message: 'UPI account not found' }, { status: 404 });
       }
 
-      if (body.displayName) account.displayName = body.displayName;
-      if (body.provider) account.provider = body.provider;
+      // Allow changing upiId with uniqueness validation
+      if (body.upiId) {
+        const cleanUpi = body.upiId.trim().toLowerCase();
+        const existing = await UpiAccount.findOne({
+          upiId: cleanUpi,
+          _id: { $ne: id },
+        });
+        if (existing) {
+          return NextResponse.json(
+            { success: false, message: `UPI ID "${cleanUpi}" is already used by another account` },
+            { status: 409 }
+          );
+        }
+        account.upiId = cleanUpi;
+      }
+
+      if (body.displayName) account.displayName = body.displayName.trim();
+      if (body.provider) account.provider = body.provider.trim();
       if (body.status) account.status = body.status;
-      if (body.priority !== undefined) account.priority = Number(body.priority);
-      if (body.weight !== undefined) account.weight = Number(body.weight);
+      if (body.priority !== undefined) account.priority = Math.max(1, Number(body.priority));
+      if (body.weight !== undefined) account.weight = Math.max(1, Number(body.weight));
       if (body.dailyTransactionLimit !== undefined)
-        account.dailyTransactionLimit = Number(body.dailyTransactionLimit);
+        account.dailyTransactionLimit = Math.max(1, Number(body.dailyTransactionLimit));
       if (body.dailyCollectionLimit !== undefined)
-        account.dailyCollectionLimit = Number(body.dailyCollectionLimit);
+        account.dailyCollectionLimit = Math.max(1000, Number(body.dailyCollectionLimit));
       if (body.qrCode !== undefined) account.qrCode = body.qrCode;
 
       await account.save();
 
       return NextResponse.json({
         success: true,
-        message: 'UPI account updated successfully',
+        message: 'Merchant UPI account updated successfully',
         account,
       });
     } catch (error: any) {
+      console.error('Update UPI account error:', error);
       return NextResponse.json({ success: false, message: error.message }, { status: 500 });
     }
   }
@@ -52,11 +69,11 @@ export const DELETE = withAuth(
 
       return NextResponse.json({
         success: true,
-        message: 'UPI account removed successfully',
+        message: `Merchant UPI account "${account.displayName}" (${account.upiId}) removed successfully`,
       });
     } catch (error: any) {
+      console.error('Delete UPI account error:', error);
       return NextResponse.json({ success: false, message: error.message }, { status: 500 });
     }
   }
 );
-

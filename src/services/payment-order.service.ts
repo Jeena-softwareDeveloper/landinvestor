@@ -5,6 +5,7 @@ import Land from '@/models/Land';
 import Customer from '@/models/Customer';
 import Investment from '@/models/Investment';
 import AuditLog from '@/models/AuditLog';
+import PlatformSetting from '@/models/PlatformSetting';
 import { TierService } from './tier.service';
 import { UpiRotationService } from './upi-rotation.service';
 import { UpiRotationStrategy } from '@/types';
@@ -32,7 +33,12 @@ export class PaymentOrderService {
   }) {
     await connectDB();
 
-    const { customerId, landId, amount, customerNotes, strategy = 'round_robin' } = params;
+    const { customerId, landId, amount, customerNotes } = params;
+    let strategy = params.strategy;
+    if (!strategy) {
+      const setting = await PlatformSetting.findOne({ key: 'upi_rotation_strategy' }).lean();
+      strategy = (setting?.value as UpiRotationStrategy) || 'round_robin';
+    }
 
     const land = await Land.findById(landId);
     if (!land) throw new Error('Land property not found');

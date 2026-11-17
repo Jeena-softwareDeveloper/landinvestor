@@ -5,20 +5,14 @@ import {
   QrCode,
   Plus,
   RefreshCw,
-  ShieldCheck,
-  CheckCircle,
-  XCircle,
-  Clock,
-  Layers,
-  ArrowRight,
-  TrendingUp,
-  Settings,
-  AlertTriangle,
-  FileText,
   Trash2,
   Edit,
-  Power,
-  CreditCard,
+  ChevronUp,
+  ChevronDown,
+  Upload,
+  Eye,
+  AlertTriangle,
+  FileText,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PageHeader } from '@/components/ui/page-header';
@@ -40,6 +34,7 @@ export default function AdminUpiManagementPage() {
 
   // Active Rotation Strategy Setting
   const [strategy, setStrategy] = useState<UpiRotationStrategy>('round_robin');
+  const [savingStrategy, setSavingStrategy] = useState(false);
 
   // Add / Edit Modal
   const [showModal, setShowModal] = useState(false);
@@ -52,7 +47,16 @@ export default function AdminUpiManagementPage() {
   const [dailyTxLimit, setDailyTxLimit] = useState(50);
   const [dailyColLimit, setDailyColLimit] = useState(1000000);
   const [status, setStatus] = useState<'active' | 'inactive' | 'suspended'>('active');
+  const [qrCode, setQrCode] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [uploadingQr, setUploadingQr] = useState(false);
+
+  // Delete Confirmation Modal
+  const [deleteTarget, setDeleteTarget] = useState<IUpiAccount | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  // QR Code Preview Modal
+  const [previewAccount, setPreviewAccount] = useState<IUpiAccount | null>(null);
 
   const fetchUpiData = async () => {
     try {
@@ -68,6 +72,9 @@ export default function AdminUpiManagementPage() {
       if (accJson.success) {
         setAccounts(accJson.accounts || []);
         setStats(accJson.stats || {});
+        if (accJson.activeStrategy) {
+          setStrategy(accJson.activeStrategy);
+        }
       }
       if (logJson.success) {
         setLogs(logJson.logs || []);
@@ -84,6 +91,28 @@ export default function AdminUpiManagementPage() {
     fetchUpiData();
   }, []);
 
+  const handleStrategyChange = async (newStrategy: UpiRotationStrategy) => {
+    setStrategy(newStrategy);
+    try {
+      setSavingStrategy(true);
+      const res = await fetch('/api/admin/upi', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ strategy: newStrategy }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        toast.success(`Active strategy saved: ${newStrategy.replace('_', ' ').toUpperCase()}`);
+      } else {
+        toast.error(json.message || 'Failed to save strategy');
+      }
+    } catch {
+      toast.error('Failed to update rotation strategy');
+    } finally {
+      setSavingStrategy(false);
+    }
+  };
+
   const handleOpenAddModal = () => {
     setEditingId(null);
     setUpiId('');
@@ -94,6 +123,7 @@ export default function AdminUpiManagementPage() {
     setDailyTxLimit(50);
     setDailyColLimit(1000000);
     setStatus('active');
+    setQrCode('');
     setShowModal(true);
   };
 
@@ -107,13 +137,45 @@ export default function AdminUpiManagementPage() {
     setDailyTxLimit(acc.dailyTransactionLimit || 50);
     setDailyColLimit(acc.dailyCollectionLimit || 1000000);
     setStatus(acc.status || 'active');
+    setQrCode(acc.qrCode || '');
     setShowModal(true);
+  };
+
+  const handleQrUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploadingQr(true);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', 'merchant-upi-qr');
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.url) {
+        setQrCode(data.url);
+        toast.success('Merchant QR code uploaded successfully!');
+      } else {
+        toast.error(data.message || 'Upload failed');
+      }
+    } catch {
+      toast.error('Failed to upload QR image');
+    } finally {
+      setUploadingQr(false);
+    }
   };
 
   const handleSaveUpi = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!upiId || !displayName) {
-      toast.error('UPI ID and Display Name are required');
+    const cleanUpi = upiId.trim().toLowerCase();
+    const cleanName = displayName.trim();
+
+    if (!cleanUpi || !cleanName) {
+      toast.error('UPI ID (VPA) and Display Name are required');
       return;
     }
 
@@ -126,14 +188,15 @@ export default function AdminUpiManagementPage() {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          upiId,
-          displayName,
-          provider,
+          upiId: cleanUpi,
+          displayName: cleanName,
+          provider: provider.trim(),
           status,
-          priority: Number(priority),
-          weight: Number(weight),
-          dailyTransactionLimit: Number(dailyTxLimit),
-          dailyCollectionLimit: Number(dailyColLimit),
+          priority: Math.max(1, Number(priority)),
+          weight: Math.max(1, Number(weight)),
+          dailyTransactionLimit: Math.max(1, Number(dailyTxLimit)),
+          dailyCollectionLimit: Math.max(1000, Number(dailyColLimit)),
+          qrCode,
         }),
       });
 
@@ -144,11 +207,11 @@ export default function AdminUpiManagementPage() {
         return;
       }
 
-      toast.success(editingId ? 'UPI Account updated!' : 'Merchant UPI Account created!');
+      toast.success(editingId ? 'Merchant UPI Account updated!' : 'Merchant UPI Account created!');
       setShowModal(false);
       fetchUpiData();
     } catch {
-      toast.error('An error occurred');
+      toast.error('An error occurred while saving UPI account');
     } finally {
       setSubmitting(false);
     }
@@ -164,33 +227,72 @@ export default function AdminUpiManagementPage() {
       });
       const json = await res.json();
       if (json.success) {
-        toast.success(`Account ${acc.displayName} set to ${newStatus}`);
-        fetchUpiData();
+        toast.success(`Account "${acc.displayName}" is now ${newStatus.toUpperCase()}`);
+        setAccounts((prev) =>
+          prev.map((a) => (a._id === acc._id ? { ...a, status: newStatus } : a))
+        );
+      } else {
+        toast.error(json.message || 'Failed to update status');
       }
     } catch {
       toast.error('Failed to toggle status');
     }
   };
 
-  const handleDeleteUpi = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this UPI account?')) return;
+  const handleQuickPriorityChange = async (acc: IUpiAccount, delta: number) => {
+    const newPriority = Math.max(1, (acc.priority || 1) + delta);
+    if (newPriority === acc.priority) return;
+
     try {
-      const res = await fetch(`/api/admin/upi/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/admin/upi/${acc._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priority: newPriority }),
+      });
       const json = await res.json();
       if (json.success) {
-        toast.success('UPI Account removed');
+        toast.success(`Priority for "${acc.displayName}" updated to P-${newPriority}`);
         fetchUpiData();
+      } else {
+        toast.error(json.message || 'Failed to update priority');
+      }
+    } catch {
+      toast.error('Failed to adjust priority');
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+
+    try {
+      setDeleting(true);
+      const res = await fetch(`/api/admin/upi/${deleteTarget._id}`, { method: 'DELETE' });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        toast.success(json.message || 'UPI Account removed successfully');
+        setDeleteTarget(null);
+        fetchUpiData();
+      } else {
+        toast.error(json.message || 'Failed to delete UPI account');
       }
     } catch {
       toast.error('Failed to delete UPI account');
+    } finally {
+      setDeleting(false);
     }
   };
+
+  const generatedPreviewQr = upiId
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=8&data=${encodeURIComponent(
+        `upi://pay?pa=${upiId.trim()}&pn=${encodeURIComponent(displayName.trim() || 'LandVest Merchant')}&cu=INR`
+      )}`
+    : '';
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Dynamic UPI Management & Rotation"
-        description="Configure institutional merchant UPI accounts, daily transaction limits, and dynamic assignment rules."
+        description="Configure institutional merchant UPI accounts, priority rotation rules, and transaction limits."
         breadcrumbs={[
           { label: 'Admin', href: '/admin/dashboard' },
           { label: 'UPI Management' },
@@ -245,28 +347,29 @@ export default function AdminUpiManagementPage() {
 
         {/* Active Rotation Engine Setting */}
         <div className="bg-gradient-to-br from-[#142B4A] to-[#2563EB] text-white p-5 rounded-2xl shadow-xs space-y-2">
-          <span className="text-[11px] font-bold text-blue-200 uppercase tracking-wider block">
-            Active Rotation Strategy
-          </span>
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-blue-200 uppercase tracking-wider block">
+              Active Rotation Strategy
+            </span>
+            {savingStrategy && <LoadingSpinner size="sm" />}
+          </div>
           <select
             value={strategy}
-            onChange={(e) => {
-              setStrategy(e.target.value as UpiRotationStrategy);
-              toast.success(`Rotation strategy set to: ${e.target.value}`);
-            }}
-            className="w-full text-xs font-bold py-2 px-2.5 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none"
+            disabled={savingStrategy}
+            onChange={(e) => handleStrategyChange(e.target.value as UpiRotationStrategy)}
+            className="w-full text-xs font-bold py-2 px-2.5 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none cursor-pointer"
           >
             <option value="round_robin" className="text-slate-900">
               Round Robin (Deterministic)
+            </option>
+            <option value="priority" className="text-slate-900">
+              Manual Priority Selection (P-High First)
             </option>
             <option value="least_used" className="text-slate-900">
               Least-Used (Collection Balance)
             </option>
             <option value="weighted" className="text-slate-900">
               Weighted Rotation
-            </option>
-            <option value="priority" className="text-slate-900">
-              Manual Priority Selection
             </option>
           </select>
           <span className="text-[10px] text-blue-200/80 block">
@@ -278,8 +381,15 @@ export default function AdminUpiManagementPage() {
       {/* ─── Merchant UPI Accounts Table ─────────────────────────── */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
         <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-          <h3 className="font-bold text-sm text-[#142B4A]">Configured Merchant UPI Destinations</h3>
-          <span className="text-xs text-slate-400">{accounts.length} Total Accounts</span>
+          <div>
+            <h3 className="font-bold text-sm text-[#142B4A]">Configured Merchant UPI Destinations</h3>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Click edit to modify VPA, priority, or limits. Click delete to remove from rotation.
+            </p>
+          </div>
+          <span className="text-xs font-semibold text-slate-500 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-200">
+            {accounts.length} Total Accounts
+          </span>
         </div>
 
         {loading ? (
@@ -299,26 +409,35 @@ export default function AdminUpiManagementPage() {
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
                 <tr>
-                  <th className="py-3 px-4">Merchant Display Name & ID</th>
+                  <th className="py-3 px-4">Merchant Display Name &amp; ID</th>
                   <th className="py-3 px-4">Provider / Bank</th>
                   <th className="py-3 px-4">Status</th>
                   <th className="py-3 px-4">Priority / Weight</th>
                   <th className="py-3 px-4">Today&apos;s Usage</th>
                   <th className="py-3 px-4">Lifetime Total</th>
+                  <th className="py-3 px-4 text-center">QR Code</th>
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
                 {accounts.map((acc) => (
-                  <tr key={acc._id} className="hover:bg-slate-50/60">
+                  <tr key={acc._id} className="hover:bg-slate-50/70 transition-colors">
+                    {/* Name & ID */}
                     <td className="py-3.5 px-4">
                       <div className="font-bold text-slate-900 text-sm">{acc.displayName}</div>
-                      <div className="font-mono text-[11px] text-[#2563EB]">{acc.upiId}</div>
+                      <div className="font-mono text-[11px] text-[#2563EB] flex items-center gap-1.5 mt-0.5">
+                        <span>{acc.upiId}</span>
+                      </div>
                     </td>
+
+                    {/* Provider */}
                     <td className="py-3.5 px-4 font-medium text-slate-600">{acc.provider}</td>
+
+                    {/* Status Toggle */}
                     <td className="py-3.5 px-4">
                       <button
                         onClick={() => handleToggleStatus(acc)}
+                        title="Click to toggle status"
                         className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider cursor-pointer transition-colors ${
                           acc.status === 'active'
                             ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
@@ -328,34 +447,79 @@ export default function AdminUpiManagementPage() {
                         {acc.status}
                       </button>
                     </td>
+
+                    {/* Priority & Quick Adjust */}
                     <td className="py-3.5 px-4">
-                      <span className="font-bold text-[#142B4A]">P-{acc.priority}</span> • Weight: {acc.weight}
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-xs px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">
+                          P-{acc.priority}
+                        </span>
+                        <div className="flex flex-col">
+                          <button
+                            onClick={() => handleQuickPriorityChange(acc, 1)}
+                            title="Increase Priority"
+                            className="p-0.5 hover:text-blue-600 text-slate-400 hover:bg-slate-100 rounded"
+                          >
+                            <ChevronUp className="w-3 h-3" />
+                          </button>
+                          <button
+                            onClick={() => handleQuickPriorityChange(acc, -1)}
+                            title="Decrease Priority"
+                            className="p-0.5 hover:text-blue-600 text-slate-400 hover:bg-slate-100 rounded"
+                          >
+                            <ChevronDown className="w-3 h-3" />
+                          </button>
+                        </div>
+                        <span className="text-[11px] text-slate-400">W: {acc.weight}</span>
+                      </div>
                     </td>
+
+                    {/* Today Usage */}
                     <td className="py-3.5 px-4">
                       <div className="font-bold text-slate-900">{formatCurrency(acc.currentDailyAmount || 0)}</div>
                       <div className="text-[10px] text-slate-400">
                         {acc.currentDailyCount || 0} / {acc.dailyTransactionLimit} txns
                       </div>
                     </td>
+
+                    {/* Lifetime Total */}
                     <td className="py-3.5 px-4">
                       <div className="font-bold text-[#142B4A]">{formatCurrency(acc.totalCollection || 0)}</div>
                       <div className="text-[10px] text-slate-400">{acc.totalTransactions || 0} total orders</div>
                     </td>
-                    <td className="py-3.5 px-4 text-right space-x-1">
+
+                    {/* QR Code Preview Button */}
+                    <td className="py-3.5 px-4 text-center">
                       <button
-                        onClick={() => handleOpenEditModal(acc)}
-                        title="Edit"
-                        className="p-1.5 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-blue-50"
+                        onClick={() => setPreviewAccount(acc)}
+                        title="View Scannable QR Code"
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold text-slate-700 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 border border-slate-200 transition-colors"
                       >
-                        <Edit className="w-4 h-4" />
+                        <QrCode className="w-3.5 h-3.5 text-blue-600" />
+                        <span>QR</span>
                       </button>
-                      <button
-                        onClick={() => handleDeleteUpi(acc._id)}
-                        title="Delete"
-                        className="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                    </td>
+
+                    {/* Actions: Edit & Delete */}
+                    <td className="py-3.5 px-4 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => handleOpenEditModal(acc)}
+                          title="Edit Merchant UPI Account"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors cursor-pointer"
+                        >
+                          <Edit className="w-3.5 h-3.5" />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget(acc)}
+                          title="Delete Merchant Account"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Delete</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -409,7 +573,7 @@ export default function AdminUpiManagementPage() {
         )}
       </div>
 
-      {/* ─── Add/Edit UPI Modal ─────────────────────────────────── */}
+      {/* ─── Add / Edit UPI Modal ───────────────────────────────── */}
       {showModal && (
         <Modal
           isOpen={showModal}
@@ -418,14 +582,16 @@ export default function AdminUpiManagementPage() {
           description="Enter authorized institutional merchant banking details for customer investment rotation."
         >
           <form onSubmit={handleSaveUpi} className="space-y-4 pt-2">
-            <FormInput
-              label="UPI ID (VPA)"
-              placeholder="e.g. landvest.merchant1@icici"
-              value={upiId}
-              onChange={(e) => setUpiId(e.target.value)}
-              disabled={!!editingId}
-              required
-            />
+            <div>
+              <FormInput
+                label="UPI ID (VPA)"
+                placeholder="e.g. landvest.merchant1@icici"
+                value={upiId}
+                onChange={(e) => setUpiId(e.target.value)}
+                helperText="Fully editable. Unique NPCI virtual payment address."
+                required
+              />
+            </div>
 
             <FormInput
               label="Merchant Display Name"
@@ -445,21 +611,23 @@ export default function AdminUpiManagementPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <FormInput
-                label="Priority (Higher = Priority)"
+                label="Priority (Higher = P-High first)"
                 type="number"
                 min="1"
                 max="10"
                 value={priority}
                 onChange={(e) => setPriority(Number(e.target.value))}
+                helperText="1 (Low) to 10 (Highest priority)"
                 required
               />
               <FormInput
-                label="Weight (for Weighted Rotation)"
+                label="Weight (Weighted Rotation)"
                 type="number"
                 min="1"
                 max="10"
                 value={weight}
                 onChange={(e) => setWeight(Number(e.target.value))}
+                helperText="Relative assignment weight"
                 required
               />
             </div>
@@ -488,11 +656,56 @@ export default function AdminUpiManagementPage() {
               value={status}
               onChange={(e) => setStatus(e.target.value as any)}
               options={[
-                { value: 'active', label: 'Active (Included in rotation)' },
+                { value: 'active', label: 'Active (Included in live rotation)' },
                 { value: 'inactive', label: 'Inactive (Excluded from rotation)' },
                 { value: 'suspended', label: 'Suspended (Maintenance)' },
               ]}
             />
+
+            {/* Custom QR Code Upload / Preview */}
+            <div className="border border-slate-200 rounded-xl p-3.5 bg-slate-50 space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                  <QrCode className="w-4 h-4 text-blue-600" />
+                  <span>Merchant QR Code</span>
+                </label>
+                <label className="text-[11px] font-bold text-blue-600 hover:text-blue-700 cursor-pointer flex items-center gap-1">
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>{uploadingQr ? 'Uploading…' : 'Upload QR Image'}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleQrUpload}
+                    disabled={uploadingQr}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+
+              {qrCode ? (
+                <div className="flex items-center gap-3 bg-white p-2.5 rounded-lg border border-slate-200">
+                  <img src={qrCode} alt="Custom QR" className="w-16 h-16 object-contain rounded border" />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-[11px] font-bold text-slate-800 block truncate">Custom QR Image Uploaded</span>
+                    <button
+                      type="button"
+                      onClick={() => setQrCode('')}
+                      className="text-[10px] text-red-600 hover:underline mt-0.5"
+                    >
+                      Remove custom QR (use auto-generator)
+                    </button>
+                  </div>
+                </div>
+              ) : generatedPreviewQr ? (
+                <div className="flex items-center gap-3 bg-white p-2.5 rounded-lg border border-slate-200">
+                  <img src={generatedPreviewQr} alt="Live QR Preview" className="w-16 h-16 object-contain rounded border" />
+                  <div className="flex-1">
+                    <span className="text-[11px] font-bold text-emerald-700 block">Auto-Generated Dynamic QR Active</span>
+                    <span className="text-[10px] text-slate-400">Scannable by GPay, PhonePe, Paytm, BHIM</span>
+                  </div>
+                </div>
+              ) : null}
+            </div>
 
             <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
               <Button
@@ -511,7 +724,96 @@ export default function AdminUpiManagementPage() {
           </form>
         </Modal>
       )}
+
+      {/* ─── Delete Confirmation Modal ─────────────────────────── */}
+      {deleteTarget && (
+        <Modal
+          isOpen={!!deleteTarget}
+          onClose={() => setDeleteTarget(null)}
+          title="Delete Merchant UPI Account"
+          description="Are you sure you want to remove this merchant UPI destination?"
+        >
+          <div className="space-y-4 pt-2">
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3 text-red-900">
+              <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+              <div className="text-xs space-y-1">
+                <p className="font-bold">Permanent Deletion Warning</p>
+                <p className="text-red-700">
+                  You are about to delete <strong>{deleteTarget.displayName}</strong> (<span className="font-mono">{deleteTarget.upiId}</span>). It will immediately be excluded from future customer rotation assignments.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={deleting}
+                onClick={() => setDeleteTarget(null)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                loading={deleting}
+                onClick={handleConfirmDelete}
+                className="font-bold bg-red-600 hover:bg-red-700 text-white"
+              >
+                Yes, Delete Account
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* ─── Live Scannable QR Code Modal ────────────────────────── */}
+      {previewAccount && (
+        <Modal
+          isOpen={!!previewAccount}
+          onClose={() => setPreviewAccount(null)}
+          title={`Scan & Test: ${previewAccount.displayName}`}
+          description={`Merchant VPA: ${previewAccount.upiId}`}
+        >
+          <div className="text-center py-4 space-y-4">
+            <div className="w-64 h-64 mx-auto bg-white p-3 rounded-2xl border border-slate-200 shadow-md flex items-center justify-center">
+              <img
+                src={
+                  previewAccount.qrCode ||
+                  `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=8&data=${encodeURIComponent(
+                    `upi://pay?pa=${previewAccount.upiId}&pn=${encodeURIComponent(previewAccount.displayName)}&cu=INR`
+                  )}`
+                }
+                alt="Merchant UPI QR"
+                className="w-full h-full object-contain"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <div className="font-mono font-bold text-sm text-[#142B4A] bg-blue-50 py-1 px-3 rounded-lg border border-blue-200 inline-block">
+                {previewAccount.upiId}
+              </div>
+              <p className="text-xs text-slate-500 font-medium">
+                {previewAccount.provider} • Priority: P-{previewAccount.priority} • Weight: {previewAccount.weight}
+              </p>
+            </div>
+
+            <div className="pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setPreviewAccount(null)}
+                className="w-full"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
-
