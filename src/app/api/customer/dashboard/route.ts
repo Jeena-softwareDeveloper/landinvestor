@@ -47,8 +47,8 @@ export async function GET(req: NextRequest) {
       },
     ]);
 
-    const totalAccruedReturns = returnSummary[0]?.totalAccrued || 0;
-    const totalReturnsPaid = returnSummary[0]?.totalPaid || 0;
+    const investmentAccruedTotal = activeInvestments.reduce((sum, i) => sum + (i.totalAccruedReturn || 0), 0);
+    const totalAccruedReturns = Math.max(returnSummary[0]?.totalAccrued || 0, investmentAccruedTotal);
 
     // Aggregate Pending Payment Orders
     const pendingOrders = await PaymentOrder.find({
@@ -62,12 +62,18 @@ export async function GET(req: NextRequest) {
     // Withdrawals
     const withdrawals = await Withdrawal.find({ customerId: customer._id })
       .sort({ createdAt: -1 })
-      .limit(5)
+      .limit(10)
       .lean();
 
     const pendingWithdrawalAmount = withdrawals
       .filter((w) => w.status === 'pending' || w.status === 'processing')
       .reduce((sum, w) => sum + w.requestedAmount, 0);
+
+    const paidWithdrawalAmount = withdrawals
+      .filter((w) => w.status === 'paid')
+      .reduce((sum, w) => sum + w.requestedAmount, 0);
+
+    const totalReturnsPaid = (returnSummary[0]?.totalPaid || 0) + paidWithdrawalAmount;
 
     const availableWithdrawalBalance = Math.max(
       0,
@@ -102,7 +108,12 @@ export async function GET(req: NextRequest) {
         walletBalance: customer.walletBalance || 0,
         kycStatus: customer.kycStatus,
         investorTier: currentTierKey,
-        tierInfo: currentTier,
+        tierInfo: {
+          ...currentTier,
+          tierName: currentTier.name,
+          maxWithdrawalLimit,
+          totalInvested,
+        },
         nextTier,
         nextTierProgress,
         maxWithdrawalLimit,
@@ -119,4 +130,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
