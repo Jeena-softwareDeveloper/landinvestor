@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { User, ShieldCheck, CreditCard, Building, Save } from 'lucide-react';
+import { User, ShieldCheck, CreditCard, Building, Save, LogOut } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import { FormInput } from '@/components/ui/input';
@@ -55,6 +55,16 @@ export default function CustomerProfilePage() {
     loadProfile();
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/me', { method: 'DELETE' });
+    } catch {
+      // ignore
+    }
+    toast.success('Logged out successfully');
+    window.location.href = '/customer/login';
+  };
+
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -106,11 +116,21 @@ export default function CustomerProfilePage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-black text-[#142B4A] tracking-tight">Investor Profile & Banking</h1>
-        <p className="text-xs text-slate-500 mt-1">
-          Manage your verified payout bank destination, KYC credentials, and contact details.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-black text-[#142B4A] tracking-tight">Investor Profile &amp; Banking</h1>
+          <p className="text-xs text-slate-500 mt-1">
+            Manage your verified payout bank destination, KYC credentials, and contact details.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="self-start sm:self-auto inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors cursor-pointer shadow-2xs"
+        >
+          <LogOut className="w-4 h-4 text-red-500" />
+          <span>Log Out</span>
+        </button>
       </div>
 
       <form onSubmit={handleSaveProfile} className="space-y-6">
@@ -227,6 +247,27 @@ export default function CustomerProfilePage() {
           </div>
         </div>
       </form>
+
+      {/* Account Session & Sign Out Card */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <h4 className="font-bold text-sm text-[#142B4A] flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <span>Active Investor Session</span>
+          </h4>
+          <p className="text-xs text-slate-500">
+            Signed in as <strong className="text-slate-800 font-semibold">{customer?.fullName}</strong> ({customer?.email || customer?.mobile})
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors cursor-pointer"
+        >
+          <LogOut className="w-4 h-4 text-red-500" />
+          <span>Sign Out from Device</span>
+        </button>
+      </div>
     </div>
   );
 }

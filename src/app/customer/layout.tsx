@@ -153,16 +153,13 @@ export default function CustomerLayout({
             )}
 
             <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-              <div className="w-8 h-8 rounded-full bg-[#142B4A] text-white flex items-center justify-center text-xs font-bold">
-                {customer?.fullName?.charAt(0) || 'C'}
-              </div>
-              <button
-                onClick={handleLogout}
-                title="Log out"
-                className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              <Link
+                href="/customer/profile"
+                title="Investor Profile"
+                className="w-8 h-8 rounded-full bg-[#142B4A] hover:bg-blue-600 text-white flex items-center justify-center text-xs font-bold transition-colors"
               >
-                <LogOut className="w-4 h-4" />
-              </button>
+                {customer?.fullName?.charAt(0) || 'C'}
+              </Link>
             </div>
           </div>
         </div>
