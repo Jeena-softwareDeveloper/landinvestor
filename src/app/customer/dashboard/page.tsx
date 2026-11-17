@@ -311,22 +311,24 @@ export default function CustomerDashboardPage() {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-bold text-sm text-[#142B4A]">{inv.landId?.name}</h4>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                      ACTIVE
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-500">Survey: {inv.landId?.surveyNumber}</p>
-                  <div className="flex items-center justify-between pt-2 text-xs">
+                <div className="flex-1 space-y-2">
+                  <h4 className="font-bold text-sm text-[#142B4A]">{inv.landId?.name}</h4>
+                  <div className="grid grid-cols-3 gap-2 pt-1 text-xs">
                     <div>
-                      <span className="text-slate-400 text-[10px] block">Invested</span>
-                      <strong className="text-[#142B4A]">{formatCurrency(inv.amount)}</strong>
+                      <span className="text-slate-400 text-[10px] block font-medium">Invested</span>
+                      <strong className="text-xs sm:text-sm text-[#142B4A] font-bold">{formatCurrency(inv.amount)}</strong>
                     </div>
                     <div>
-                      <span className="text-slate-400 text-[10px] block">Accrued Return</span>
-                      <strong className="text-emerald-600">{formatCurrency(inv.totalAccruedReturn || 0)}</strong>
+                      <span className="text-slate-400 text-[10px] block font-medium">Monthly Rent</span>
+                      <strong className="text-xs sm:text-sm text-blue-600 font-bold">
+                        {formatCurrency(inv.monthlyAccruedReturn || (inv.amount * 0.08 * 30) / 100)}
+                      </strong>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 text-[10px] block font-medium">Duration</span>
+                      <strong className="text-xs sm:text-sm text-emerald-600 font-bold">
+                        {inv.duration ? `${inv.duration} Mo` : '12 Mo'}
+                      </strong>
                     </div>
                   </div>
                 </div>

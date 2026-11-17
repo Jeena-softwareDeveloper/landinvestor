@@ -3,17 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  TrendingUp,
   Building,
-  Calendar,
-  ShieldCheck,
   ArrowRight,
-  FileText,
-  AlertCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LoadingSpinner } from '@/components/ui/loading';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatCurrency } from '@/lib/utils';
 import { IInvestment } from '@/types';
 
 export default function CustomerInvestmentsPage() {
@@ -51,7 +46,7 @@ export default function CustomerInvestmentsPage() {
         <div>
           <h1 className="text-2xl font-black text-[#142B4A] tracking-tight">My Land Holdings</h1>
           <p className="text-xs text-slate-500 mt-1">
-            Active fractional investment contracts, legal title references, and accumulated returns.
+            Active fractional investment contracts and verified returns.
           </p>
         </div>
         <Link href="/customer/lands">
@@ -79,52 +74,46 @@ export default function CustomerInvestmentsPage() {
           {investments.map((inv: any) => (
             <div
               key={inv._id}
-              className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6 hover:shadow-md transition-shadow"
+              className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5 hover:shadow-md transition-shadow"
             >
-              <div className="flex items-start gap-4">
-                <div className="w-20 h-20 rounded-xl bg-slate-100 overflow-hidden shrink-0">
+              {/* Top / Left: Land Image & Name Only */}
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-slate-100 overflow-hidden shrink-0 border border-slate-100">
                   <img
                     src={
                       inv.landId?.coverImage ||
+                      (inv.landId?.images && inv.landId?.images[0]) ||
                       'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&auto=format&fit=crop'
                     }
                     alt={inv.landId?.name}
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-bold text-[#142B4A]">{inv.landId?.name}</h3>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                      {inv.status?.toUpperCase() || 'ACTIVE'}
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500">
-                    Survey Number: <strong>{inv.landId?.surveyNumber}</strong> • Location:{' '}
-                    {inv.landId?.location}
-                  </p>
-                  <p className="text-[11px] text-slate-400">
-                    Contract Started: {formatDate(inv.startDate)} • Ref: {inv.paymentReference}
-                  </p>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-[#142B4A] leading-snug">
+                    {inv.landId?.name}
+                  </h3>
                 </div>
               </div>
 
-              {/* Stats Column */}
-              <div className="grid grid-cols-3 gap-6 text-xs text-left md:text-right border-t md:border-t-0 pt-4 md:pt-0">
+              {/* Bottom / Right: 3 Clean Stats (Invested Amount, Monthly Rent, Duration) */}
+              <div className="grid grid-cols-3 gap-3 sm:gap-6 text-xs text-left md:text-right border-t md:border-t-0 pt-3 md:pt-0">
                 <div>
-                  <span className="text-slate-400 text-[10px] block">Invested Amount</span>
-                  <strong className="text-base text-[#142B4A] font-black">{formatCurrency(inv.amount)}</strong>
+                  <span className="text-slate-400 text-[10px] sm:text-xs block font-medium">Invested Amount</span>
+                  <strong className="text-sm sm:text-base text-[#142B4A] font-black block mt-0.5">
+                    {formatCurrency(inv.amount)}
+                  </strong>
                 </div>
                 <div>
-                  <span className="text-slate-400 text-[10px] block">Monthly Yield</span>
-                  <strong className="text-base text-blue-600 font-black">
+                  <span className="text-slate-400 text-[10px] sm:text-xs block font-medium">Monthly Rent</span>
+                  <strong className="text-sm sm:text-base text-blue-600 font-black block mt-0.5">
                     {formatCurrency(inv.monthlyAccruedReturn || (inv.amount * 0.08 * 30) / 100)}
                   </strong>
                 </div>
                 <div>
-                  <span className="text-slate-400 text-[10px] block">Total Accrued</span>
-                  <strong className="text-base text-emerald-600 font-black">
-                    {formatCurrency(inv.totalAccruedReturn || 0)}
+                  <span className="text-slate-400 text-[10px] sm:text-xs block font-medium">Duration</span>
+                  <strong className="text-sm sm:text-base text-emerald-600 font-black block mt-0.5">
+                    {inv.duration ? `${inv.duration} Months` : '12 Months'}
                   </strong>
                 </div>
               </div>
@@ -135,4 +124,3 @@ export default function CustomerInvestmentsPage() {
     </div>
   );
 }
-
