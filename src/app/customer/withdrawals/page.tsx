@@ -86,7 +86,7 @@ export default function CustomerWithdrawalsPage() {
   const availableBalance =
     stats.availableWithdrawalBalance !== undefined
       ? stats.availableWithdrawalBalance
-      : 533000;
+      : 528000;
 
   const maxAllowedLimit = Math.min(availableBalance, maxTierLimit);
 
@@ -146,15 +146,13 @@ export default function CustomerWithdrawalsPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-4 sm:space-y-5 pb-8">
+    <div className="max-w-2xl mx-auto space-y-4 sm:space-y-5 pb-8 font-normal">
       {/* ─── 1. Top 3D Hero Section ─────────────────────────────────────── */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#0a4fd8] via-[#125ef0] to-[#1e73fa] shadow-xl p-3 sm:p-5 text-center border border-blue-400/30">
-        {/* Soft background glow spheres */}
         <div className="absolute top-0 left-1/3 w-64 h-64 bg-cyan-300/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 right-10 w-48 h-48 bg-blue-600/30 rounded-full blur-2xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col items-center">
-          {/* 3D Visual Asset (Growth Chart, Gold ₹ Coins, Glowing Leather Wallet) */}
           <img
             src="/images/wallet/wallet-hero-3d.png"
             alt="3D Wallet and Growth Chart"
@@ -172,18 +170,18 @@ export default function CustomerWithdrawalsPage() {
             setShowRequestModal(true);
           }}
           disabled={availableBalance < 500}
-          className="w-full group relative overflow-hidden rounded-2xl sm:rounded-full py-3.5 sm:py-4 px-5 sm:px-7 bg-gradient-to-r from-[#1762ee] via-[#2d77fc] to-[#1762ee] hover:from-[#1357d6] hover:to-[#1357d6] text-white font-black shadow-lg shadow-blue-500/35 border border-blue-300/40 transition-all transform active:scale-[0.99] flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          className="w-full group relative overflow-hidden rounded-2xl sm:rounded-full py-3.5 sm:py-4 px-5 sm:px-7 bg-gradient-to-r from-[#1762ee] via-[#2d77fc] to-[#1762ee] hover:from-[#1357d6] hover:to-[#1357d6] text-white shadow-lg shadow-blue-500/25 border border-blue-300/40 transition-all transform active:scale-[0.99] flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center border border-white/30 text-white shadow-inner">
-              <Wallet className="w-5 h-5 text-white" />
+              <Wallet className="w-5 h-5 text-white stroke-[1.75]" />
             </div>
-            <span className="font-extrabold text-sm sm:text-base tracking-wider uppercase text-left">
+            <span className="font-normal sm:font-medium text-sm sm:text-base text-left tracking-normal">
               Request Return Withdrawal
             </span>
           </div>
           <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 transition-transform">
-            <ArrowRight className="w-5 h-5 text-white" />
+            <ArrowRight className="w-5 h-5 text-white stroke-[1.75]" />
           </div>
         </button>
       </div>
@@ -194,42 +192,41 @@ export default function CustomerWithdrawalsPage() {
         <div className="relative overflow-hidden rounded-2xl py-3 px-3.5 bg-gradient-to-r from-[#b38322] via-[#e5b342] to-[#ad7c1a] border border-amber-200/80 shadow-md flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-[#6a4200]/30 flex items-center justify-center border border-amber-200/50 shrink-0">
-              <Crown className="w-4 h-4 text-amber-100" />
+              <Crown className="w-4 h-4 text-amber-100 stroke-[1.75]" />
             </div>
             <div className="text-left leading-tight">
-              <div className="text-[11px] sm:text-xs font-black text-[#382100] tracking-wider uppercase truncate">
-                {tierName.toUpperCase()} TIER
+              <div className="text-[11px] sm:text-xs font-normal sm:font-medium text-[#382100] truncate">
+                {tierName} Tier
               </div>
-              <div className="text-[9px] text-[#4d2f00]/80 font-bold hidden sm:block">
+              <div className="text-[9px] text-[#4d2f00]/80 font-normal hidden sm:block">
                 Priority Allocation
               </div>
             </div>
           </div>
-          <Sparkles className="w-4 h-4 text-amber-100 opacity-90 shrink-0" />
+          <Sparkles className="w-4 h-4 text-amber-100 opacity-90 shrink-0 stroke-[1.75]" />
         </div>
 
         {/* Right: Metallic Emerald Governance Badge */}
         <div className="relative overflow-hidden rounded-2xl py-3 px-3.5 bg-gradient-to-r from-[#0b8457] via-[#10a870] to-[#08734b] border border-emerald-300/60 shadow-md flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-emerald-900/30 flex items-center justify-center border border-emerald-200/40 shrink-0">
-              <ShieldCheck className="w-4 h-4 text-emerald-100" />
+              <ShieldCheck className="w-4 h-4 text-emerald-100 stroke-[1.75]" />
             </div>
             <div className="text-left leading-tight">
-              <div className="text-[11px] sm:text-xs font-black text-white tracking-wide truncate">
+              <div className="text-[11px] sm:text-xs font-normal sm:font-medium text-white truncate">
                 SEBI REITs
               </div>
-              <div className="text-[9px] text-emerald-100 font-semibold truncate">
+              <div className="text-[9px] text-emerald-100 font-normal truncate">
                 Governance Verified
               </div>
             </div>
           </div>
-          <CheckCircle2 className="w-4 h-4 text-emerald-200 opacity-90 shrink-0" />
+          <CheckCircle2 className="w-4 h-4 text-emerald-200 opacity-90 shrink-0 stroke-[1.75]" />
         </div>
       </div>
 
       {/* ─── 4. 3D Financial Vault Card (Dark Navy) ────────────────────── */}
       <div className="relative rounded-3xl p-5 sm:p-6 bg-gradient-to-b from-[#091526] via-[#0d1e36] to-[#07101e] border border-blue-500/25 shadow-2xl overflow-hidden space-y-5">
-        {/* Ambient lighting glows */}
         <div className="absolute top-0 right-1/4 w-72 h-72 bg-blue-500/15 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-10 w-56 h-56 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
 
@@ -240,11 +237,11 @@ export default function CustomerWithdrawalsPage() {
             {/* Row 1: Active Investment */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-400/30 flex items-center justify-center shrink-0 shadow-inner">
-                <Layers className="w-5 h-5 text-cyan-400" />
+                <Layers className="w-5 h-5 text-cyan-400 stroke-[1.75]" />
               </div>
               <div className="flex-1 bg-white/[0.06] border border-white/10 rounded-2xl px-4 py-2.5 flex items-center justify-between backdrop-blur-xs">
-                <span className="text-[11px] text-slate-300 font-medium">Active Investment</span>
-                <span className="text-xs sm:text-sm font-black text-white tracking-wide">
+                <span className="text-[11px] text-slate-300 font-normal">Active Investment</span>
+                <span className="text-xs sm:text-sm font-normal text-white">
                   {formatCurrency(totalInvested)}
                 </span>
               </div>
@@ -253,13 +250,13 @@ export default function CustomerWithdrawalsPage() {
             {/* Row 2: Allowed Limit */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center shrink-0 shadow-inner">
-                <BarChart3 className="w-5 h-5 text-emerald-400" />
+                <BarChart3 className="w-5 h-5 text-emerald-400 stroke-[1.75]" />
               </div>
               <div className="flex-1 bg-white/[0.06] border border-white/10 rounded-2xl px-4 py-2.5 flex items-center justify-between backdrop-blur-xs">
-                <span className="text-[11px] text-slate-300 font-medium">
+                <span className="text-[11px] text-slate-300 font-normal">
                   Allowed Limit ({withdrawalLimitPercentage}%)
                 </span>
-                <span className="text-xs sm:text-sm font-black text-emerald-400 tracking-wide">
+                <span className="text-xs sm:text-sm font-normal text-emerald-400">
                   {formatCurrency(maxTierLimit)}
                 </span>
               </div>
@@ -268,11 +265,11 @@ export default function CustomerWithdrawalsPage() {
             {/* Row 3: SLA Turnaround */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-purple-500/15 border border-purple-400/30 flex items-center justify-center shrink-0 shadow-inner">
-                <Calendar className="w-5 h-5 text-purple-400" />
+                <Calendar className="w-5 h-5 text-purple-400 stroke-[1.75]" />
               </div>
               <div className="flex-1 bg-white/[0.06] border border-white/10 rounded-2xl px-4 py-2.5 flex items-center justify-between backdrop-blur-xs">
-                <span className="text-[11px] text-slate-300 font-medium">Turnaround</span>
-                <span className="text-xs sm:text-sm font-black text-white tracking-wide">
+                <span className="text-[11px] text-slate-300 font-normal">Turnaround</span>
+                <span className="text-xs sm:text-sm font-normal text-white">
                   {payoutSlaHours}h Instant SLA
                 </span>
               </div>
@@ -296,13 +293,13 @@ export default function CustomerWithdrawalsPage() {
         <div className="relative z-10 rounded-2xl sm:rounded-full p-2.5 sm:px-5 bg-gradient-to-r from-[#03543f] via-[#059669] to-[#047857] border border-emerald-400/60 shadow-[0_4px_25px_rgba(16,185,129,0.35)] flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <div className="w-11 h-11 rounded-full bg-amber-400/20 border-2 border-amber-300/80 flex items-center justify-center shrink-0 shadow-inner">
-              <Wallet className="w-5 h-5 text-amber-300" />
+              <Wallet className="w-5 h-5 text-amber-300 stroke-[1.75]" />
             </div>
             <div className="text-left">
-              <div className="text-[10px] sm:text-[11px] font-bold text-emerald-100 uppercase tracking-wider">
+              <div className="text-[10px] sm:text-[11px] font-normal text-emerald-100">
                 Available for Instant Withdrawal
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-sm">
+              <div className="text-2xl sm:text-3xl font-normal text-white tracking-normal drop-shadow-sm">
                 {formatCurrency(availableBalance)}
               </div>
             </div>
@@ -330,17 +327,19 @@ export default function CustomerWithdrawalsPage() {
             />
           </div>
           <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+            <span className="text-[11px] font-normal text-slate-400 block">
               Total Accrued Rental Yield
             </span>
-            <div className="text-xl sm:text-2xl font-black text-[#142B4A]">
+            <div className="text-xl sm:text-2xl font-normal sm:font-medium text-[#142B4A]">
               {formatCurrency(stats.totalAccruedReturns || 720000)}
             </div>
-            <span className="text-[10px] text-slate-400">Total verified returns across all parcels</span>
+            <span className="text-[10px] text-slate-400 font-normal">
+              Total verified returns across all parcels
+            </span>
           </div>
         </div>
         <div className="shrink-0 hidden sm:flex items-center justify-center w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100">
-          <TrendingUp className="w-6 h-6 stroke-[2.5]" />
+          <TrendingUp className="w-6 h-6 stroke-[1.75]" />
         </div>
       </div>
 
@@ -349,16 +348,16 @@ export default function CustomerWithdrawalsPage() {
         <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-              <ArrowDownLeft className="w-4 h-4 text-blue-600" />
+              <ArrowDownLeft className="w-4 h-4 text-blue-600 stroke-[1.75]" />
             </div>
             <div>
-              <h3 className="font-bold text-sm text-[#142B4A]">
+              <h3 className="font-normal sm:font-medium text-sm text-[#142B4A]">
                 Withdrawal History
               </h3>
-              <p className="text-[10px] text-slate-400">Recent settlement disbursements</p>
+              <p className="text-[10px] text-slate-400 font-normal">Recent settlement disbursements</p>
             </div>
           </div>
-          <span className="text-[11px] font-semibold text-slate-500 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-100">
+          <span className="text-[11px] font-normal text-slate-500 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-100">
             {withdrawals.length} Records
           </span>
         </div>
@@ -366,9 +365,9 @@ export default function CustomerWithdrawalsPage() {
         {withdrawals.length === 0 ? (
           <div className="py-12 text-center space-y-2">
             <div className="w-12 h-12 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mx-auto text-slate-300">
-              <Wallet className="w-6 h-6" />
+              <Wallet className="w-6 h-6 stroke-[1.75]" />
             </div>
-            <p className="text-xs text-slate-400 font-medium">No withdrawal requests found</p>
+            <p className="text-xs text-slate-400 font-normal">No withdrawal requests found</p>
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
@@ -398,25 +397,25 @@ export default function CustomerWithdrawalsPage() {
                       }`}
                     >
                       {isPaid ? (
-                        <ArrowDownLeft className="w-5 h-5" />
+                        <ArrowDownLeft className="w-5 h-5 stroke-[1.75]" />
                       ) : (
-                        <Clock className="w-5 h-5" />
+                        <Clock className="w-5 h-5 stroke-[1.75]" />
                       )}
                     </div>
                     <div className="min-w-0">
-                      <div className="font-bold text-xs sm:text-sm text-[#142B4A] truncate flex items-center gap-1.5">
+                      <div className="font-normal text-xs sm:text-sm text-[#142B4A] truncate flex items-center gap-1.5">
                         <span>{isBank ? 'Bank Transfer' : 'UPI Settlement'}</span>
                         <span className="text-slate-300">•</span>
-                        <span className="text-[11px] font-medium text-slate-500 truncate">
+                        <span className="text-[11px] text-slate-500 truncate font-normal">
                           {destinationName}
                         </span>
                       </div>
-                      <div className="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
+                      <div className="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5 font-normal">
                         <span>{formatDate(w.requestDate || w.createdAt)}</span>
                         {w.paymentReference && (
                           <>
                             <span>•</span>
-                            <span className="font-mono text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.2 rounded border border-blue-100/80">
+                            <span className="font-mono text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.2 rounded border border-blue-100/80 font-normal">
                               Ref: {w.paymentReference}
                             </span>
                           </>
@@ -427,11 +426,11 @@ export default function CustomerWithdrawalsPage() {
 
                   {/* Right: Amount & Status Badge */}
                   <div className="text-right shrink-0">
-                    <div className="text-sm sm:text-base font-black text-[#142B4A]">
+                    <div className="text-sm sm:text-base font-normal sm:font-medium text-[#142B4A]">
                       {formatCurrency(w.requestedAmount)}
                     </div>
                     <span
-                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mt-1 ${
+                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-normal tracking-normal mt-1 ${
                         isPaid
                           ? 'bg-emerald-100 text-emerald-800'
                           : isRejected
@@ -442,9 +441,9 @@ export default function CustomerWithdrawalsPage() {
                       }`}
                     >
                       {isPaid ? (
-                        <CheckCircle className="w-3 h-3 text-emerald-600" />
+                        <CheckCircle className="w-3 h-3 text-emerald-600 stroke-[1.75]" />
                       ) : (
-                        <Clock className="w-3 h-3" />
+                        <Clock className="w-3 h-3 stroke-[1.75]" />
                       )}
                       <span>{isPaid ? 'Completed' : w.status}</span>
                     </span>
@@ -480,14 +479,14 @@ export default function CustomerWithdrawalsPage() {
 
               {/* Quick Select Chips */}
               <div className="flex flex-wrap items-center gap-2 pt-2">
-                <span className="text-[11px] font-medium text-slate-400">Quick Select:</span>
+                <span className="text-[11px] font-normal text-slate-400">Quick Select:</span>
                 {[5000, 10000, 25000, 50000].map((val) => (
                   <button
                     key={val}
                     type="button"
                     disabled={val > maxAllowedLimit}
                     onClick={() => setAmount(val)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-semibold border transition-all ${
+                    className={`px-2.5 py-1 rounded-md text-xs font-normal border transition-all ${
                       amount === val
                         ? 'bg-blue-600 text-white border-blue-600'
                         : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
@@ -500,7 +499,7 @@ export default function CustomerWithdrawalsPage() {
                   <button
                     type="button"
                     onClick={() => setAmount(maxAllowedLimit)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-bold border transition-all ${
+                    className={`px-2.5 py-1 rounded-md text-xs font-normal border transition-all ${
                       amount === maxAllowedLimit
                         ? 'bg-emerald-600 text-white border-emerald-600'
                         : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
@@ -513,47 +512,47 @@ export default function CustomerWithdrawalsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+              <label className="block text-xs font-normal text-slate-700 mb-1.5">
                 Disbursement Destination
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('upi')}
-                  className={`p-3.5 rounded-xl border text-xs font-medium text-left transition-all ${
+                  className={`p-3.5 rounded-xl border text-xs font-normal text-left transition-all ${
                     paymentMethod === 'upi'
                       ? 'border-[#2563EB] bg-blue-50/80 text-[#142B4A] ring-2 ring-blue-500/20'
                       : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900">Direct Instant UPI</span>
-                    {paymentMethod === 'upi' && <Check className="w-4 h-4 text-blue-600" />}
+                    <span className="font-normal text-slate-900">Direct Instant UPI</span>
+                    {paymentMethod === 'upi' && <Check className="w-4 h-4 text-blue-600 stroke-[1.75]" />}
                   </div>
-                  <p className="font-mono text-[11px] text-blue-600 mt-1 truncate">
+                  <p className="font-mono text-[11px] text-blue-600 mt-1 truncate font-normal">
                     {customerDetails?.upiId || 'rajesh.sharma@okhdfcbank'}
                   </p>
-                  <span className="text-[10px] text-slate-400 block mt-0.5">Verified Primary VPA</span>
+                  <span className="text-[10px] text-slate-400 block mt-0.5 font-normal">Verified Primary VPA</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('bank_transfer')}
-                  className={`p-3.5 rounded-xl border text-xs font-medium text-left transition-all ${
+                  className={`p-3.5 rounded-xl border text-xs font-normal text-left transition-all ${
                     paymentMethod === 'bank_transfer'
                       ? 'border-[#2563EB] bg-blue-50/80 text-[#142B4A] ring-2 ring-blue-500/20'
                       : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900">Bank NEFT / IMPS</span>
-                    {paymentMethod === 'bank_transfer' && <Check className="w-4 h-4 text-blue-600" />}
+                    <span className="font-normal text-slate-900">Bank NEFT / IMPS</span>
+                    {paymentMethod === 'bank_transfer' && <Check className="w-4 h-4 text-blue-600 stroke-[1.75]" />}
                   </div>
-                  <p className="font-medium text-[11px] text-slate-800 mt-1 truncate">
+                  <p className="font-normal text-[11px] text-slate-800 mt-1 truncate">
                     {customerDetails?.bankDetails?.bankName || 'HDFC Bank'} ••••
                     {customerDetails?.bankDetails?.accountNumber?.slice(-4) || '7890'}
                   </p>
-                  <span className="text-[10px] text-slate-400 block mt-0.5">Verified Settlement A/C</span>
+                  <span className="text-[10px] text-slate-400 block mt-0.5 font-normal">Verified Settlement A/C</span>
                 </button>
               </div>
             </div>
@@ -580,7 +579,7 @@ export default function CustomerWithdrawalsPage() {
                 variant="secondary"
                 size="sm"
                 loading={submitting}
-                className="font-bold bg-blue-600 hover:bg-blue-700 text-white px-5"
+                className="font-normal bg-blue-600 hover:bg-blue-700 text-white px-5"
               >
                 Confirm Withdrawal Request
               </Button>
